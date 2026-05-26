@@ -267,8 +267,8 @@ p {
 .colour-orb.red {
   top: 20px;
   left: 82px;
-  width: 200px;
-  height: 200px;
+  width: 204px;
+  height: 204px;
   color: #b53c30;
 }
 
@@ -279,8 +279,8 @@ p {
 .colour-orb.yellow {
   top: 62px;
   right: 22px;
-  width: 214px;
-  height: 214px;
+  width: 204px;
+  height: 204px;
   color: #926304;
 }
 
@@ -291,8 +291,8 @@ p {
 .colour-orb.green {
   bottom: 18px;
   left: 44px;
-  width: 220px;
-  height: 220px;
+  width: 204px;
+  height: 204px;
   color: #176747;
 }
 
@@ -303,8 +303,8 @@ p {
 .colour-orb.blue {
   right: 58px;
   bottom: 0;
-  width: 192px;
-  height: 192px;
+  width: 204px;
+  height: 204px;
   color: #265ea7;
 }
 
@@ -1338,28 +1338,28 @@ p {
 
   .colour-orb.red {
     left: 10px;
-    width: 148px;
-    height: 148px;
+    width: 150px;
+    height: 150px;
   }
 
   .colour-orb.yellow {
     top: 44px;
     right: 8px;
-    width: 155px;
-    height: 155px;
+    width: 150px;
+    height: 150px;
   }
 
   .colour-orb.green {
     bottom: 12px;
     left: 14px;
-    width: 160px;
-    height: 160px;
+    width: 150px;
+    height: 150px;
   }
 
   .colour-orb.blue {
     right: 25px;
-    width: 142px;
-    height: 142px;
+    width: 150px;
+    height: 150px;
   }
 
   .intro-cards,
