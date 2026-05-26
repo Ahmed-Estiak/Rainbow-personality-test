@@ -672,27 +672,64 @@ function Results({ scores, onRetake }: { scores: Scores; onRetake: () => void })
       windowHeight: resultsExportRef.current.scrollHeight,
     });
 
-    const imgData = canvas.toDataURL("image/png");
     const pdf = new jsPDF({ unit: "mm", format: "a4" });
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
-    const imgProps = pdf.getImageProperties(imgData);
     const imgWidth = pageWidth - margin * 2;
-    const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
     const printableHeight = pageHeight - margin * 2;
+    const pxPerMm = canvas.width / imgWidth;
+    const sliceHeightPx = Math.round(printableHeight * pxPerMm);
+    const totalHeightPx = canvas.height;
+    const exportNode = resultsExportRef.current;
+    if (!exportNode) return;
 
-    let position = margin;
-    let remainingHeight = imgHeight;
+    const exportRect = exportNode.getBoundingClientRect();
+    const elementCandidates = exportNode.querySelectorAll(
+      ".score-card, .dimension-summary, .panel, .result-hero, .palette-section",
+    );
+    const boundaries = [0, totalHeightPx];
+    const scale = canvas.height / exportNode.scrollHeight;
+
+    elementCandidates.forEach((el) => {
+      const rect = el.getBoundingClientRect();
+      const relativeBottom = rect.bottom - exportRect.top;
+      const boundaryPx = Math.round(relativeBottom * scale);
+      if (boundaryPx > 0 && boundaryPx < totalHeightPx) {
+        boundaries.push(boundaryPx);
+      }
+    });
+
+    boundaries.sort((a, b) => a - b);
+
+    let yOffset = 0;
     let pageIndex = 0;
 
-    while (remainingHeight > 0) {
+    while (yOffset < totalHeightPx) {
+      const idealEnd = yOffset + sliceHeightPx;
+      let sliceEnd = boundaries
+        .filter((pos) => pos > yOffset + Math.round(sliceHeightPx * 0.2) && pos <= idealEnd)
+        .pop() ?? Math.min(idealEnd, totalHeightPx);
+
+      if (sliceEnd <= yOffset) {
+        sliceEnd = Math.min(idealEnd, totalHeightPx);
+      }
+
+      const sliceHeight = sliceEnd - yOffset;
+      const pageCanvas = document.createElement("canvas");
+      pageCanvas.width = canvas.width;
+      pageCanvas.height = sliceHeight;
+      const ctx = pageCanvas.getContext("2d");
+      if (ctx) {
+        ctx.drawImage(canvas, 0, yOffset, canvas.width, sliceHeight, 0, 0, canvas.width, sliceHeight);
+      }
+
+      const pageData = pageCanvas.toDataURL("image/png");
       if (pageIndex > 0) {
         pdf.addPage();
       }
+      pdf.addImage(pageData, "PNG", margin, margin, imgWidth, sliceHeight / pxPerMm);
 
-      pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
-      remainingHeight -= printableHeight;
-      position -= printableHeight;
+      yOffset = sliceEnd;
       pageIndex += 1;
     }
 
