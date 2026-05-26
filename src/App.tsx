@@ -24,6 +24,8 @@ const personalityProfiles: {
   title: string;
   description: string;
   image: string;
+  detailImage: string;
+  interpretation: string;
 }[] = [
   {
     colour: "Red",
@@ -31,6 +33,9 @@ const personalityProfiles: {
     description:
       "Effective and energetic. Focused on goals, momentum and visible success.",
     image: "avatars/red.jpg",
+    detailImage: "avatars/red-detail.jpg",
+    interpretation:
+      "Effective, optimistic, goal oriented, energetic. Dominating and hotheaded. Wants to be the best and to be successful.",
   },
   {
     colour: "Yellow",
@@ -38,6 +43,9 @@ const personalityProfiles: {
     description:
       "Full of ideas and flexible. Energised by freedom and new possibilities.",
     image: "avatars/yellow.jpg",
+    detailImage: "avatars/yellow-detail.jpg",
+    interpretation:
+      "Lots of ideas, 'airy'. Flexible and impulsive. Not fond of rules and procedures. Wants freedom.",
   },
   {
     colour: "Blue",
@@ -45,6 +53,9 @@ const personalityProfiles: {
     description:
       "Persistent and thoughtful. Values stability, care and considered decisions.",
     image: "avatars/blue.jpg",
+    detailImage: "avatars/blue-detail.jpg",
+    interpretation:
+      "Persistent and stable, speculative and conscientious. Does not like to be criticised. Wants stability and safety.",
   },
   {
     colour: "Green",
@@ -52,6 +63,9 @@ const personalityProfiles: {
     description:
       "Organised and quality-aware. Brings order and dependable coordination.",
     image: "avatars/green.jpg",
+    detailImage: "avatars/green-detail.jpg",
+    interpretation:
+      "The 'bureacrat', is good at sorting ideas and coordinating activities. Is sceptical towards the quality of work. Likes order and stability.",
   },
 ];
 
@@ -234,6 +248,8 @@ function Intro({
   onChoose: (id: number, value: Rating) => void;
   onNext: () => void;
 }) {
+  const [flippedCard, setFlippedCard] = useState<Colour | null>(null);
+
   return (
     <main className="intro">
       <section className="hero">
@@ -278,20 +294,51 @@ function Intro({
         </div>
         <div className="profile-cards">
           {personalityProfiles.map((profile) => (
-            <article
-              className={`profile-card ${colourDetails[profile.colour].cssClass}`}
+            <button
+              className={`profile-card ${colourDetails[profile.colour].cssClass} ${
+                flippedCard === profile.colour ? "flipped" : ""
+              }`}
               key={profile.colour}
+              type="button"
+              aria-pressed={flippedCard === profile.colour}
+              aria-label={
+                flippedCard === profile.colour
+                  ? `Return to ${profile.colour} personality card`
+                  : `Show details for ${profile.colour} personality`
+              }
+              onClick={() =>
+                setFlippedCard((current) =>
+                  current === profile.colour ? null : profile.colour,
+                )
+              }
             >
-              <img
-                src={`${import.meta.env.BASE_URL}${profile.image}`}
-                alt={`${profile.colour} personality avatar`}
-              />
-              <div className="profile-copy">
-                <span>{profile.colour}</span>
-                <h3>{profile.title}</h3>
-                <p>{profile.description}</p>
+              <div className="profile-flipper">
+                <div className="profile-face profile-front">
+                  <img
+                    src={`${import.meta.env.BASE_URL}${profile.image}`}
+                    alt={`${profile.colour} personality avatar`}
+                  />
+                  <div className="profile-copy">
+                    <span>{profile.colour}</span>
+                    <h3>{profile.title}</h3>
+                    <p>{profile.description}</p>
+                    <small>Click to explore</small>
+                  </div>
+                </div>
+                <div className="profile-face profile-back">
+                  <img
+                    src={`${import.meta.env.BASE_URL}${profile.detailImage}`}
+                    alt=""
+                    aria-hidden="true"
+                  />
+                  <div className="profile-copy">
+                    <span>{profile.colour}</span>
+                    <p className="interpretation">{profile.interpretation}</p>
+                    <small>Click to return</small>
+                  </div>
+                </div>
               </div>
-            </article>
+            </button>
           ))}
         </div>
       </section>
@@ -310,8 +357,7 @@ function Intro({
             </svg>
           </span>
           <div>
-            <strong>Private by design</strong>
-            <p>Your responses are calculated on this device and are not submitted to a server.</p>
+            <p>Your responses are processed on your device and never sent to a server.</p>
           </div>
         </div>
         <span className="privacy-line" aria-hidden="true" />

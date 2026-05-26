@@ -255,16 +255,59 @@ p {
 .profile-card {
   position: relative;
   min-width: 0;
-  overflow: hidden;
-  border: 1px solid rgba(24, 34, 38, 0.05);
+  padding: 0;
   border-radius: 21px;
+  background: transparent;
+  color: inherit;
+  perspective: 1200px;
+  text-align: left;
+  transition: transform 180ms ease, filter 180ms ease;
+}
+
+.profile-card:hover,
+.profile-card:focus-visible {
+  transform: translateY(-7px);
+  filter: drop-shadow(0 18px 22px rgba(33, 48, 44, 0.15));
+}
+
+.profile-card:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+
+.profile-flipper {
+  position: relative;
+  min-height: 480px;
+  border-radius: inherit;
+  transform-style: preserve-3d;
+  transition: transform 580ms cubic-bezier(0.22, 0.7, 0.16, 1);
+}
+
+.profile-card.flipped .profile-flipper {
+  transform: rotateY(180deg);
+}
+
+.profile-face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(24, 34, 38, 0.05);
+  border-radius: inherit;
   background: var(--paper);
   box-shadow: var(--shadow);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.profile-back {
+  transform: rotateY(180deg);
 }
 
 .profile-card::before {
   position: absolute;
-  z-index: 1;
+  z-index: 2;
   top: 0;
   right: 0;
   left: 0;
@@ -276,12 +319,13 @@ p {
 .profile-card img {
   display: block;
   width: 100%;
-  aspect-ratio: 1 / 0.82;
+  height: 222px;
   object-fit: cover;
   object-position: center 36%;
 }
 
 .profile-copy {
+  flex: 1;
   padding: 20px 21px 25px;
 }
 
@@ -324,6 +368,29 @@ p {
   color: var(--ink-soft);
   font-size: 14px;
   line-height: 1.56;
+}
+
+.profile-copy small {
+  display: block;
+  margin-top: 17px;
+  color: currentColor;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.profile-back img {
+  height: 188px;
+}
+
+.profile-back .profile-copy {
+  padding-top: 16px;
+}
+
+.profile-back .interpretation {
+  margin-top: 14px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.53;
 }
 
 .intro-cards {
@@ -379,9 +446,9 @@ p {
 .privacy-card {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
   max-width: 660px;
-  padding: 15px 23px 15px 17px;
+  padding: 10px 21px 10px 13px;
   border: 1px solid rgba(35, 130, 95, 0.17);
   border-radius: 999px;
   background: linear-gradient(100deg, #eef9f4, #fffefa);
@@ -390,8 +457,8 @@ p {
 
 .privacy-icon {
   flex: none;
-  width: 43px;
-  height: 43px;
+  width: 36px;
+  height: 36px;
   display: grid;
   place-items: center;
   border-radius: 50%;
@@ -400,23 +467,13 @@ p {
 }
 
 .privacy-icon svg {
-  width: 25px;
-  height: 25px;
+  width: 21px;
+  height: 21px;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.8;
   stroke-linecap: round;
   stroke-linejoin: round;
-}
-
-.privacy-card strong {
-  display: block;
-  margin-bottom: 3px;
-  color: var(--green);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .privacy-card p {
@@ -1085,13 +1142,14 @@ p {
 
   .privacy-card {
     align-items: flex-start;
-    padding: 14px;
+    align-items: center;
+    padding: 10px 12px;
     border-radius: 18px;
   }
 
   .privacy-icon {
-    width: 39px;
-    height: 39px;
+    width: 35px;
+    height: 35px;
   }
 
   .test-heading {
