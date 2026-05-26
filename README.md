@@ -27,10 +27,10 @@ always true). Statements are assigned to dimensions in repeating order:
 Colour areas are calculated as:
 
 ```text
-RED    = (A * B) / 2
-YELLOW = (B * C) / 2
-BLUE   = (C * D) / 2
-GREEN  = (D * A) / 2
+RED    = (D * A) / 2
+YELLOW = (A * B) / 2
+BLUE   = (B * C) / 2
+GREEN  = (C * D) / 2
 ```
 
 Each raw dimension ranges from `10` to `50`. Each calculated colour area

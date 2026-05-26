@@ -16,12 +16,12 @@ describe("calculateScores", () => {
 
     expect(result.dimensions).toEqual({ A: 50, B: 40, C: 30, D: 20 });
     expect(result.colours).toEqual({
-      Red: 1000,
-      Yellow: 600,
-      Blue: 300,
-      Green: 500,
+      Red: 500,
+      Yellow: 1000,
+      Blue: 600,
+      Green: 300,
     });
-    expect(result.dominant).toEqual(["Red"]);
+    expect(result.dominant).toEqual(["Yellow"]);
   });
 
   it("returns a tied profile when areas share the highest score", () => {
@@ -42,4 +42,3 @@ describe("calculateScores", () => {
     expect(() => calculateScores({ 1: 5 })).toThrow(/All 40 statements/);
   });
 });
-

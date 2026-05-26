@@ -416,10 +416,10 @@ function QuadrantChart({
         );
       })}
       <path className="chart-axis" d={`M ${centre} 48 V 472 M 48 ${centre} H 472`} />
-      <polygon className="area red" points={`${centre},${centre} ${a} ${b}`} />
-      <polygon className="area yellow" points={`${centre},${centre} ${b} ${c}`} />
-      <polygon className="area blue" points={`${centre},${centre} ${c} ${d}`} />
-      <polygon className="area green" points={`${centre},${centre} ${d} ${a}`} />
+      <polygon className="area red" points={`${centre},${centre} ${d} ${a}`} />
+      <polygon className="area yellow" points={`${centre},${centre} ${a} ${b}`} />
+      <polygon className="area blue" points={`${centre},${centre} ${b} ${c}`} />
+      <polygon className="area green" points={`${centre},${centre} ${c} ${d}`} />
       <g className="axis-label">
         <text x="260" y="29">A</text>
         <text x="260" y="48">{dimensions.A}</text>
@@ -431,10 +431,10 @@ function QuadrantChart({
         <text x="25" y="276">{dimensions.D}</text>
       </g>
       <g className="quadrant-label">
-        <text className="red" x="337" y="166">RED</text>
-        <text className="yellow" x="336" y="363">YELLOW</text>
-        <text className="blue" x="176" y="363">BLUE</text>
-        <text className="green" x="165" y="166">GREEN</text>
+        <text className="red" x="176" y="166">RED</text>
+        <text className="yellow" x="337" y="166">YELLOW</text>
+        <text className="blue" x="336" y="363">BLUE</text>
+        <text className="green" x="176" y="363">GREEN</text>
       </g>
     </svg>
   );
