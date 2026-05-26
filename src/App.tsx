@@ -658,18 +658,18 @@ function Results({ scores, onRetake }: { scores: Scores; onRetake: () => void })
   const rankedColours = (Object.keys(scores.colours) as Colour[]).sort(
     (first, second) => scores.colours[second] - scores.colours[first],
   );
-  const resultsRef = useRef<HTMLElement | null>(null);
+  const resultsExportRef = useRef<HTMLDivElement | null>(null);
 
   async function downloadPdf() {
-    if (!resultsRef.current) return;
+    if (!resultsExportRef.current) return;
 
     const margin = 12;
-    const canvas = await html2canvas(resultsRef.current, {
+    const canvas = await html2canvas(resultsExportRef.current, {
       backgroundColor: "#ffffff",
       scale: 2,
       useCORS: true,
-      windowWidth: resultsRef.current.scrollWidth,
-      windowHeight: resultsRef.current.scrollHeight,
+      windowWidth: resultsExportRef.current.scrollWidth,
+      windowHeight: resultsExportRef.current.scrollHeight,
     });
 
     const imgData = canvas.toDataURL("image/png");
@@ -688,11 +688,11 @@ function Results({ scores, onRetake }: { scores: Scores; onRetake: () => void })
     while (remainingHeight > 0) {
       if (pageIndex > 0) {
         pdf.addPage();
-        position -= printableHeight;
       }
 
       pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
       remainingHeight -= printableHeight;
+      position -= printableHeight;
       pageIndex += 1;
     }
 
@@ -700,40 +700,41 @@ function Results({ scores, onRetake }: { scores: Scores; onRetake: () => void })
   }
 
   return (
-    <main className="results-page" ref={resultsRef}>
-      <section
-        className={`result-hero ${colourDetails[primaryColour].cssClass}`}
-        aria-label="Dominant personality result"
-      >
-        <div className="result-hero-copy">
-          <p className="eyebrow">{tie ? "Your blended result" : "Your result"}</p>
-          <div className="dominant-tags">
-            {scores.dominant.map((colour) => (
-              <span className={colourDetails[colour].cssClass} key={colour}>
-                {getPersonalityProfile(colour).name}
-              </span>
-            ))}
+    <main className="results-page">
+      <div className="results-export" ref={resultsExportRef}>
+        <section
+          className={`result-hero ${colourDetails[primaryColour].cssClass}`}
+          aria-label="Dominant personality result"
+        >
+          <div className="result-hero-copy">
+            <p className="eyebrow">{tie ? "Your blended result" : "Your result"}</p>
+            <div className="dominant-tags">
+              {scores.dominant.map((colour) => (
+                <span className={colourDetails[colour].cssClass} key={colour}>
+                  {getPersonalityProfile(colour).name}
+                </span>
+              ))}
+            </div>
+            <h1>
+              {tie ? "A balanced colour blend" : primaryProfile.title}
+            </h1>
+            <p className="result-description">
+              {tie
+                ? "Two or more colour areas share the highest score. Your style draws equally on these team roles."
+                : primaryProfile.interpretation}
+            </p>
           </div>
-          <h1>
-            {tie ? "A balanced colour blend" : primaryProfile.title}
-          </h1>
-          <p className="result-description">
-            {tie
-              ? "Two or more colour areas share the highest score. Your style draws equally on these team roles."
-              : primaryProfile.interpretation}
-          </p>
-        </div>
-        <div className="result-portrait">
-          <img
-            src={`${import.meta.env.BASE_URL}${primaryProfile.image}`}
-            alt={`${primaryProfile.name} personality illustration`}
-          />
-          <span className={colourDetails[primaryColour].cssClass}>
-            {primaryProfile.name.toUpperCase()}
-          </span>
-        </div>
-      </section>
-      <div className="result-layout">
+          <div className="result-portrait">
+            <img
+              src={`${import.meta.env.BASE_URL}${primaryProfile.image}`}
+              alt={`${primaryProfile.name} personality illustration`}
+            />
+            <span className={colourDetails[primaryColour].cssClass}>
+              {primaryProfile.name.toUpperCase()}
+            </span>
+          </div>
+        </section>
+        <div className="result-layout">
         <section className="panel chart-panel">
           <div className="panel-header">
             <h2>Rainbow profile map</h2>
@@ -814,6 +815,7 @@ function Results({ scores, onRetake }: { scores: Scores; onRetake: () => void })
           </div>
         ))}
       </section>
+      </div>
       <div className="result-action">
         <button className="secondary" type="button" onClick={downloadPdf}>
           Download YOUR Result
