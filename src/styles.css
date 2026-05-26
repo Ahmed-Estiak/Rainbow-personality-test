@@ -926,8 +926,8 @@ p {
 .result-hero::before {
   position: absolute;
   top: 0;
-  right: 36px;
-  left: 36px;
+  right: 22px;
+  left: 22px;
   height: 5px;
   border-radius: 0 0 999px 999px;
   background: var(--result-accent);
@@ -1627,8 +1627,8 @@ p {
   }
 
   .result-hero::before {
-    right: 22px;
-    left: 22px;
+    right: 12px;
+    left: 12px;
   }
 
   .result-hero h1 {
