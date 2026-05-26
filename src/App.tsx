@@ -881,7 +881,7 @@ function Results({ scores, onRetake }: { scores: Scores; onRetake: () => void })
       </div>
       <div className="result-action">
         <button className="secondary" type="button" onClick={downloadPdf}>
-          Download YOUR Result
+          Download Your Result
         </button>
         <button className="primary" type="button" onClick={onRetake}>
           Retake the test
