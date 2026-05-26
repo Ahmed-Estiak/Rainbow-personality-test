@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
+import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
 import { questions, type Dimension, type Question } from "./data/questions";
 import {
   calculateScores,
@@ -656,9 +658,49 @@ function Results({ scores, onRetake }: { scores: Scores; onRetake: () => void })
   const rankedColours = (Object.keys(scores.colours) as Colour[]).sort(
     (first, second) => scores.colours[second] - scores.colours[first],
   );
+  const resultsRef = useRef<HTMLElement | null>(null);
+
+  async function downloadPdf() {
+    if (!resultsRef.current) return;
+
+    const margin = 12;
+    const canvas = await html2canvas(resultsRef.current, {
+      backgroundColor: "#ffffff",
+      scale: 2,
+      useCORS: true,
+      windowWidth: resultsRef.current.scrollWidth,
+      windowHeight: resultsRef.current.scrollHeight,
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF({ unit: "mm", format: "a4" });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const imgProps = pdf.getImageProperties(imgData);
+    const imgWidth = pageWidth - margin * 2;
+    const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+    const printableHeight = pageHeight - margin * 2;
+
+    let position = margin;
+    let remainingHeight = imgHeight;
+    let pageIndex = 0;
+
+    while (remainingHeight > 0) {
+      if (pageIndex > 0) {
+        pdf.addPage();
+        position -= printableHeight;
+      }
+
+      pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
+      remainingHeight -= printableHeight;
+      pageIndex += 1;
+    }
+
+    pdf.save("rainbow-personality-your-result.pdf");
+  }
 
   return (
-    <main className="results-page">
+    <main className="results-page" ref={resultsRef}>
       <section
         className={`result-hero ${colourDetails[primaryColour].cssClass}`}
         aria-label="Dominant personality result"
@@ -773,6 +815,9 @@ function Results({ scores, onRetake }: { scores: Scores; onRetake: () => void })
         ))}
       </section>
       <div className="result-action">
+        <button className="secondary" type="button" onClick={downloadPdf}>
+          Download YOUR Result
+        </button>
         <button className="primary" type="button" onClick={onRetake}>
           Retake the test
         </button>
