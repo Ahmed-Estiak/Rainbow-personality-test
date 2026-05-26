@@ -1340,6 +1340,7 @@ p {
 }
 
 /* Hover float + shadow for result page cards and panels, but not the "How the result is formed" box */
+.results-page .result-hero,
 .results-page .score-card,
 .results-page .panel:not(.dimension-summary) {
   transition: transform 200ms ease, box-shadow 200ms ease;
@@ -1347,6 +1348,8 @@ p {
 }
 
 @media (hover: hover) {
+  .results-page .result-hero:hover,
+  .results-page .result-hero:focus-within,
   .results-page .score-card:hover,
   .results-page .score-card:focus-within,
   .results-page .panel:not(.dimension-summary):hover,
