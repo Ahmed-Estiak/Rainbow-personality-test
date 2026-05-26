@@ -308,9 +308,9 @@ p {
 .profile-card::before {
   position: absolute;
   z-index: 2;
-  top: 8px;
-  right: 12px;
-  left: 12px;
+  top: 0;
+  right: 24px;
+  left: 24px;
   height: 4px;
   border-radius: 999px;
   content: "";
