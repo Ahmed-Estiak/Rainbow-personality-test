@@ -703,6 +703,7 @@ function Results({ scores, onRetake }: { scores: Scores; onRetake: () => void })
 
     let yOffset = 0;
     let pageIndex = 0;
+    let lastPageImageHeightMm = 0;
 
     while (yOffset < totalHeightPx) {
       const idealEnd = yOffset + sliceHeightPx;
@@ -724,25 +725,33 @@ function Results({ scores, onRetake }: { scores: Scores; onRetake: () => void })
       }
 
       const pageData = pageCanvas.toDataURL("image/png");
+      const pageImageHeightMm = sliceHeight / pxPerMm;
       if (pageIndex > 0) {
         pdf.addPage();
       }
-      pdf.addImage(pageData, "PNG", margin, margin, imgWidth, sliceHeight / pxPerMm);
+      pdf.addImage(pageData, "PNG", margin, margin, imgWidth, pageImageHeightMm);
+      lastPageImageHeightMm = pageImageHeightMm;
 
       yOffset = sliceEnd;
       pageIndex += 1;
     }
 
     const buttonText = "Retake the test";
-    const buttonWidth = 70;
-    const buttonHeight = 14;
+    const buttonWidth = 72;
+    const buttonHeight = 15;
     const buttonX = (pageWidth - buttonWidth) / 2;
-    const buttonY = pageHeight - margin - buttonHeight;
+    let buttonY = margin + lastPageImageHeightMm + 6;
+
+    if (buttonY + buttonHeight + margin > pageHeight) {
+      pdf.addPage();
+      buttonY = margin;
+    }
+
     pdf.setFillColor(24, 34, 38);
     pdf.roundedRect(buttonX, buttonY, buttonWidth, buttonHeight, 4, 4, "F");
     pdf.setTextColor(255, 255, 255);
     pdf.setFontSize(12);
-    pdf.text(buttonText, pageWidth / 2, buttonY + buttonHeight / 2 + 4, {
+    pdf.text(buttonText, pageWidth / 2, buttonY + buttonHeight / 2 + 0.5, {
       align: "center",
       baseline: "middle",
     });
