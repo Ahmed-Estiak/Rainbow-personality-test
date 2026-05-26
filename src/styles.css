@@ -265,7 +265,7 @@ p {
 }
 
 .colour-orb.red {
-  top: 20px;
+  top: 28px;
   left: 82px;
   width: 204px;
   height: 204px;
@@ -277,8 +277,8 @@ p {
 }
 
 .colour-orb.yellow {
-  top: 62px;
-  right: 22px;
+  top: 67px;
+  right: 34px;
   width: 204px;
   height: 204px;
   color: #926304;
@@ -289,8 +289,8 @@ p {
 }
 
 .colour-orb.green {
-  bottom: 18px;
-  left: 44px;
+  bottom: 28px;
+  left: 53px;
   width: 204px;
   height: 204px;
   color: #176747;
@@ -301,8 +301,8 @@ p {
 }
 
 .colour-orb.blue {
-  right: 58px;
-  bottom: 0;
+  right: 62px;
+  bottom: 8px;
   width: 204px;
   height: 204px;
   color: #265ea7;
@@ -1337,27 +1337,29 @@ p {
   }
 
   .colour-orb.red {
-    left: 10px;
+    top: 25px;
+    left: 15px;
     width: 150px;
     height: 150px;
   }
 
   .colour-orb.yellow {
-    top: 44px;
-    right: 8px;
+    top: 47px;
+    right: 15px;
     width: 150px;
     height: 150px;
   }
 
   .colour-orb.green {
-    bottom: 12px;
-    left: 14px;
+    bottom: 26px;
+    left: 20px;
     width: 150px;
     height: 150px;
   }
 
   .colour-orb.blue {
-    right: 25px;
+    right: 29px;
+    bottom: 10px;
     width: 150px;
     height: 150px;
   }
