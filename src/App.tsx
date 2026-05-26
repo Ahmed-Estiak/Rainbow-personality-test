@@ -625,27 +625,58 @@ function QuestionCard({
 }
 
 function Results({ scores, onRetake }: { scores: Scores; onRetake: () => void }) {
-  const profileLabel =
-    scores.dominant.length === 1
-      ? scores.dominant[0]
-      : scores.dominant.join(" + ");
   const tie = scores.dominant.length > 1;
+  const primaryColour = scores.dominant[0];
+  const primaryProfile = personalityProfiles.find(
+    ({ colour }) => colour === primaryColour,
+  )!;
+  const rankedColours = (Object.keys(scores.colours) as Colour[]).sort(
+    (first, second) => scores.colours[second] - scores.colours[first],
+  );
 
   return (
     <main className="results-page">
-      <section className="result-banner">
-        <p className="eyebrow">Your result</p>
-        <h1>
-          {tie ? "Your profile is a blend of" : "Your dominant colour is"}{" "}
-          <span className={colourDetails[scores.dominant[0]].cssClass}>
-            {profileLabel}
+      <section
+        className={`result-hero ${colourDetails[primaryColour].cssClass}`}
+        aria-label="Dominant personality result"
+      >
+        <div className="result-hero-copy">
+          <p className="eyebrow">{tie ? "Your blended result" : "Your result"}</p>
+          <div className="dominant-tags">
+            {scores.dominant.map((colour) => (
+              <span className={colourDetails[colour].cssClass} key={colour}>
+                {colour}
+              </span>
+            ))}
+          </div>
+          <h1>
+            {tie ? "A balanced colour blend" : primaryProfile.title}
+          </h1>
+          <p className="result-description">
+            {tie
+              ? "Two or more colour areas share the highest score. Your style draws equally on these team roles."
+              : primaryProfile.interpretation}
+          </p>
+          <div className="dominant-stats">
+            <div>
+              <small>Colour area</small>
+              <strong>{scores.colours[primaryColour]}</strong>
+            </div>
+            <div>
+              <small>Formula</small>
+              <code>{colourDetails[primaryColour].formula}</code>
+            </div>
+          </div>
+        </div>
+        <div className="result-portrait">
+          <img
+            src={`${import.meta.env.BASE_URL}${primaryProfile.image}`}
+            alt={`${primaryColour} personality illustration`}
+          />
+          <span className={colourDetails[primaryColour].cssClass}>
+            {primaryColour.toUpperCase()}
           </span>
-        </h1>
-        <p>
-          {tie
-            ? "Two or more colour areas share the highest score, showing a balanced profile across these roles."
-            : colourDetails[scores.dominant[0]].description}
-        </p>
+        </div>
       </section>
       <div className="result-layout">
         <section className="panel chart-panel">
@@ -657,33 +688,68 @@ function Results({ scores, onRetake }: { scores: Scores; onRetake: () => void })
         </section>
         <section className="panel comparison-panel">
           <div className="panel-header">
-            <h2>Colour comparison</h2>
-            <p>Area scores range from 50 to 1,250.</p>
+            <h2>Your colour balance</h2>
+            <p>Compared areas, ranked from your strongest expression.</p>
           </div>
-          <ColourBars colours={scores.colours} dominant={scores.dominant} />
+          <ColourBars
+            colours={scores.colours}
+            dominant={scores.dominant}
+            order={rankedColours}
+          />
+          <div className="dimension-inline">
+            <h3>Dimension totals</h3>
+            <div>
+              {(Object.keys(scores.dimensions) as Dimension[]).map((dimension) => (
+                <span className="dimension-pill" key={dimension}>
+                  <b>{dimension}</b>
+                  {scores.dimensions[dimension]}
+                </span>
+              ))}
+            </div>
+          </div>
         </section>
       </div>
-      <section className="score-grid" aria-label="Detailed scores">
-        {(Object.keys(colourDetails) as Colour[]).map((colour) => (
+      <section className="palette-section" aria-labelledby="palette-title">
+        <div className="palette-heading">
+          <p className="eyebrow">Full spectrum</p>
+          <h2 id="palette-title">Your four personality colours</h2>
+          <p>Every colour contributes to how you work with others.</p>
+        </div>
+        <div className="score-grid" aria-label="Detailed colour profiles">
+        {personalityProfiles.map((profile) => (
           <article
-            key={colour}
-            className={`score-card ${colourDetails[colour].cssClass} ${
-              scores.dominant.includes(colour) ? "dominant" : ""
+            key={profile.colour}
+            className={`score-card ${colourDetails[profile.colour].cssClass} ${
+              scores.dominant.includes(profile.colour) ? "dominant" : ""
             }`}
           >
-            <div>
-              <h2>{colour}</h2>
-              <code>{colourDetails[colour].formula}</code>
+            <img
+              src={`${import.meta.env.BASE_URL}${profile.detailImage}`}
+              alt=""
+              aria-hidden="true"
+            />
+            <div className="score-card-body">
+              <div className="score-title">
+                <div>
+                  <span>{profile.colour}</span>
+                  <h3>{profile.title}</h3>
+                </div>
+                <strong>{scores.colours[profile.colour]}</strong>
+              </div>
+              <code>{colourDetails[profile.colour].formula}</code>
+              <p>{profile.interpretation}</p>
             </div>
-            <strong>{scores.colours[colour]}</strong>
-            <p>{colourDetails[colour].description}</p>
           </article>
         ))}
+        </div>
       </section>
       <section className="dimension-summary panel">
         <div>
-          <h2>Dimension totals</h2>
-          <p>Each raw dimension is the sum of 10 responses.</p>
+          <h2>How the result is formed</h2>
+          <p>
+            Each dimension totals ten responses. Adjacent dimension pairs form
+            the four coloured triangle areas in your profile map.
+          </p>
         </div>
         {(Object.keys(scores.dimensions) as Dimension[]).map((dimension) => (
           <div className="dimension-chip" key={dimension}>
@@ -761,16 +827,23 @@ function QuadrantChart({
 function ColourBars({
   colours,
   dominant,
+  order,
 }: {
   colours: Record<Colour, number>;
   dominant: Colour[];
+  order?: Colour[];
 }) {
+  const displayedColours = order ?? (Object.keys(colours) as Colour[]);
+
   return (
     <div className="bar-list">
-      {(Object.keys(colours) as Colour[]).map((colour) => (
+      {displayedColours.map((colour, index) => (
         <div className="bar-row" key={colour}>
           <div className="bar-name">
-            <span>{colour}</span>
+            <span>
+              <small>{String(index + 1).padStart(2, "0")}</small>
+              {colour}
+            </span>
             <strong>{colours[colour]}</strong>
           </div>
           <div className="bar-track">
