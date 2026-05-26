@@ -71,10 +71,18 @@ function App() {
   const [page, setPage] = useState(0);
   const [answers, setAnswers] = useState<Answers>(readSavedAnswers);
   const [message, setMessage] = useState("");
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(answers));
   }, [answers]);
+
+  useEffect(() => {
+    const updateScrollButton = () => setShowScrollTop(window.scrollY > 420);
+    updateScrollButton();
+    window.addEventListener("scroll", updateScrollButton, { passive: true });
+    return () => window.removeEventListener("scroll", updateScrollButton);
+  }, []);
 
   const answered = Object.keys(answers).length;
   const pageQuestions = questions.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
@@ -102,6 +110,7 @@ function App() {
       return;
     }
     setPage((current) => current + 1);
+    setView("test");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -118,19 +127,59 @@ function App() {
     localStorage.removeItem(STORAGE_KEY);
     setAnswers({});
     setPage(0);
-    setView("test");
+    setView("intro");
     setMessage("");
+    scrollToQuestionnaire();
+  }
+
+  function scrollToQuestionnaire() {
+    window.requestAnimationFrame(() => {
+      document
+        .getElementById("questionnaire-start")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
+  function resume() {
+    if (page === 0) {
+      setView("intro");
+      scrollToQuestionnaire();
+      return;
+    }
+    setView("test");
+  }
+
+  function previousPage() {
+    setMessage("");
+    if (page === 1) {
+      setPage(0);
+      setView("intro");
+      scrollToQuestionnaire();
+      return;
+    }
+    setPage((current) => Math.max(0, current - 1));
+  }
+
+  function goHome() {
+    setPage(0);
+    setView("intro");
+    setMessage("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   return (
     <div className="app-shell">
-      <Header onHome={() => setView("intro")} />
+      <Header onHome={goHome} />
       {view === "intro" && (
         <Intro
           answered={answered}
+          answers={answers}
+          message={message}
           onStart={startFresh}
-          onResume={() => setView("test")}
+          onResume={resume}
           onReset={restart}
+          onChoose={choose}
+          onNext={advance}
         />
       )}
       {view === "test" && (
@@ -141,10 +190,7 @@ function App() {
           answered={answered}
           message={message}
           onChoose={choose}
-          onPrevious={() => {
-            setMessage("");
-            setPage((current) => Math.max(0, current - 1));
-          }}
+          onPrevious={previousPage}
           onNext={advance}
         />
       )}
@@ -152,6 +198,7 @@ function App() {
         <Results scores={scores} onRetake={restart} />
       )}
       <Footer />
+      <ScrollToTopButton visible={showScrollTop} />
     </div>
   );
 }
@@ -170,14 +217,22 @@ function Header({ onHome }: { onHome: () => void }) {
 
 function Intro({
   answered,
+  answers,
+  message,
   onStart,
   onResume,
   onReset,
+  onChoose,
+  onNext,
 }: {
   answered: number;
+  answers: Answers;
+  message: string;
   onStart: () => void;
   onResume: () => void;
   onReset: () => void;
+  onChoose: (id: number, value: Rating) => void;
+  onNext: () => void;
 }) {
   return (
     <main className="intro">
@@ -245,9 +300,29 @@ function Intro({
         <InfoCard title="Four dimensions" body="Your responses produce A, B, C and D scores for team tendencies." />
         <InfoCard title="A visual result" body="Four connected colour areas reveal your dominant rainbow profile." />
       </section>
-      <p className="privacy-note">
-        Your responses are calculated on this device and are not submitted to a server.
-      </p>
+      <aside className="privacy-callout" aria-label="Privacy note">
+        <span className="privacy-line" aria-hidden="true" />
+        <div className="privacy-card">
+          <span className="privacy-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 3.5 19 6v5.3c0 4.1-2.7 7.5-7 9.2-4.3-1.7-7-5.1-7-9.2V6l7-2.5Z" />
+              <path d="m9.2 11.8 1.9 2 3.9-4.3" />
+            </svg>
+          </span>
+          <div>
+            <strong>Private by design</strong>
+            <p>Your responses are calculated on this device and are not submitted to a server.</p>
+          </div>
+        </div>
+        <span className="privacy-line" aria-hidden="true" />
+      </aside>
+      <FirstQuestionSection
+        answers={answers}
+        answered={answered}
+        message={message}
+        onChoose={onChoose}
+        onNext={onNext}
+      />
     </main>
   );
 }
@@ -258,6 +333,65 @@ function InfoCard({ title, body }: { title: string; body: string }) {
       <h2>{title}</h2>
       <p>{body}</p>
     </article>
+  );
+}
+
+function FirstQuestionSection({
+  answers,
+  answered,
+  message,
+  onChoose,
+  onNext,
+}: {
+  answers: Answers;
+  answered: number;
+  message: string;
+  onChoose: (id: number, value: Rating) => void;
+  onNext: () => void;
+}) {
+  return (
+    <section className="embedded-test" id="questionnaire-start">
+      <div className="test-heading">
+        <div>
+          <p className="eyebrow">Begin the questionnaire</p>
+          <h2>How well does each statement fit you?</h2>
+        </div>
+        <div className="progress-copy">
+          <strong>{answered}</strong> / 40 answered
+        </div>
+      </div>
+      <div className="progress-track" aria-label={`${answered} of 40 answered`}>
+        <div style={{ width: `${(answered / questions.length) * 100}%` }} />
+      </div>
+      <div className="scale-key" aria-label="Response scale">
+        {ratings.map(({ value, label }) => (
+          <span key={value}>
+            <b>{value}</b> {label}
+          </span>
+        ))}
+      </div>
+      <div className="question-list" aria-label="Statements 1 to 5">
+        {questions.slice(0, PAGE_SIZE).map((question) => (
+          <QuestionCard
+            key={question.id}
+            question={question}
+            selected={answers[question.id]}
+            onChoose={onChoose}
+          />
+        ))}
+      </div>
+      {message && (
+        <p className="form-message" role="alert">
+          {message}
+        </p>
+      )}
+      <div className="embedded-navigation">
+        <span>Page 1 of {TOTAL_PAGES}</span>
+        <button className="primary" type="button" onClick={onNext}>
+          Next
+        </button>
+      </div>
+    </section>
   );
 }
 
@@ -533,6 +667,21 @@ function Footer() {
     <footer className="site-footer">
       <p>The Rainbow Personality Test | A reflection tool for common roles in teams</p>
     </footer>
+  );
+}
+
+function ScrollToTopButton({ visible }: { visible: boolean }) {
+  return (
+    <button
+      className={`scroll-top ${visible ? "visible" : ""}`}
+      type="button"
+      aria-label="Back to top"
+      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 19V5M5.5 11.5 12 5l6.5 6.5" />
+      </svg>
+    </button>
   );
 }
 

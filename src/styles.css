@@ -345,16 +345,114 @@ p {
   font-size: 20px;
 }
 
-.info-card p,
-.privacy-note {
+.info-card p {
   color: var(--ink-soft);
   font-size: 15px;
   line-height: 1.55;
 }
 
-.privacy-note {
-  margin-bottom: 42px;
-  text-align: center;
+.privacy-callout {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin: 34px 0 43px;
+}
+
+.privacy-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(35, 130, 95, 0.24)
+  );
+}
+
+.privacy-line:last-child {
+  background: linear-gradient(
+    90deg,
+    rgba(35, 130, 95, 0.24),
+    transparent
+  );
+}
+
+.privacy-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  max-width: 660px;
+  padding: 15px 23px 15px 17px;
+  border: 1px solid rgba(35, 130, 95, 0.17);
+  border-radius: 999px;
+  background: linear-gradient(100deg, #eef9f4, #fffefa);
+  box-shadow: 0 10px 27px rgba(33, 48, 44, 0.06);
+}
+
+.privacy-icon {
+  flex: none;
+  width: 43px;
+  height: 43px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--green);
+  background: var(--green-soft);
+}
+
+.privacy-icon svg {
+  width: 25px;
+  height: 25px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.privacy-card strong {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--green);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.privacy-card p {
+  color: var(--ink-soft);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.embedded-test {
+  margin-bottom: 64px;
+  padding: 43px 44px 39px;
+  border: 1px solid var(--line);
+  border-radius: 30px;
+  background: rgba(255, 254, 250, 0.9);
+  box-shadow: var(--shadow);
+  scroll-margin-top: 24px;
+}
+
+.embedded-test .test-heading h2 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(29px, 4vw, 40px);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+}
+
+.embedded-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 22px;
+  margin-top: 29px;
+}
+
+.embedded-navigation span {
+  color: var(--ink-soft);
+  font-size: 14px;
 }
 
 .test-page,
@@ -821,6 +919,42 @@ p {
   text-align: center;
 }
 
+.scroll-top {
+  position: fixed;
+  z-index: 10;
+  right: max(22px, calc((100vw - 1260px) / 2));
+  bottom: 27px;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(24, 34, 38, 0.1);
+  border-radius: 50%;
+  color: white;
+  background: var(--ink);
+  box-shadow: 0 12px 27px rgba(24, 34, 38, 0.22);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(14px);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.scroll-top.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.scroll-top svg {
+  width: 23px;
+  height: 23px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 @media (max-width: 860px) {
   .hero {
     display: block;
@@ -845,6 +979,18 @@ p {
 
   .scale-key {
     display: none;
+  }
+
+  .embedded-test {
+    padding: 35px 25px 29px;
+  }
+
+  .privacy-line {
+    display: none;
+  }
+
+  .privacy-card {
+    margin: 0 auto;
   }
 
   .dimension-summary {
@@ -927,6 +1073,27 @@ p {
     padding-top: 38px;
   }
 
+  .embedded-test {
+    margin-bottom: 43px;
+    padding: 28px 15px 22px;
+    border-radius: 20px;
+  }
+
+  .privacy-callout {
+    margin: 29px 0 32px;
+  }
+
+  .privacy-card {
+    align-items: flex-start;
+    padding: 14px;
+    border-radius: 18px;
+  }
+
+  .privacy-icon {
+    width: 39px;
+    height: 39px;
+  }
+
   .test-heading {
     display: block;
   }
@@ -959,6 +1126,11 @@ p {
     padding: 0 18px;
   }
 
+  .embedded-navigation .primary {
+    min-height: 48px;
+    padding: 0 22px;
+  }
+
   .result-banner p:last-child {
     font-size: 16px;
   }
@@ -974,5 +1146,12 @@ p {
   .dimension-chip {
     flex: 1;
     min-width: calc(50% - 10px);
+  }
+
+  .scroll-top {
+    right: 17px;
+    bottom: 18px;
+    width: 47px;
+    height: 47px;
   }
 }
