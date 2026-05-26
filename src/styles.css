@@ -178,16 +178,90 @@ p {
   max-width: 500px;
   justify-self: end;
   width: 100%;
+  isolation: isolate;
 }
 
 .colour-orb {
+  --pull-x: 0px;
+  --pull-y: 0px;
+  --glow-x: 50%;
+  --glow-y: 35%;
+  --proximity: 0;
   position: absolute;
-  display: grid;
-  place-items: center;
+  display: block;
+  padding: 0;
   border-radius: 50%;
+  background: transparent;
+  transform: translate3d(var(--pull-x), var(--pull-y), 0);
+  transition: transform 190ms ease-out;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.12em;
+}
+
+.orb-drift,
+.orb-surface {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.orb-surface {
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  transform: scale(calc(1 + (var(--proximity) * 0.025)));
+  transition: transform 230ms ease, box-shadow 230ms ease, filter 230ms ease;
+  animation: orb-morph 9s ease-in-out infinite;
+}
+
+.orb-surface::after {
+  position: absolute;
+  inset: 9px;
+  border: 1px solid currentColor;
+  border-radius: inherit;
+  opacity: 0;
+  content: "";
+  pointer-events: none;
+}
+
+.orb-shine {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at var(--glow-x) var(--glow-y),
+    rgba(255, 255, 255, 0.56),
+    rgba(255, 255, 255, 0) 39%
+  );
+  opacity: calc(0.14 + (var(--proximity) * 0.58));
+  transition: opacity 180ms ease-out;
+}
+
+.orb-label {
+  position: relative;
+  z-index: 1;
+}
+
+.colour-orb:hover .orb-surface,
+.colour-orb:focus-visible .orb-surface {
+  transform: scale(1.06);
+  filter: saturate(1.08);
+}
+
+.colour-orb:hover .orb-surface::after,
+.colour-orb:focus-visible .orb-surface::after {
+  animation: orb-ripple 1.45s ease-out infinite;
+}
+
+.colour-orb:focus-visible {
+  outline: none;
+}
+
+.colour-orb:focus-visible .orb-surface {
+  outline: 2px solid currentColor;
+  outline-offset: 5px;
 }
 
 .colour-orb.red {
@@ -196,6 +270,9 @@ p {
   width: 200px;
   height: 200px;
   color: #b53c30;
+}
+
+.colour-orb.red .orb-surface {
   background: var(--red-soft);
 }
 
@@ -205,6 +282,9 @@ p {
   width: 214px;
   height: 214px;
   color: #926304;
+}
+
+.colour-orb.yellow .orb-surface {
   background: var(--yellow-soft);
 }
 
@@ -214,6 +294,9 @@ p {
   width: 220px;
   height: 220px;
   color: #176747;
+}
+
+.colour-orb.green .orb-surface {
   background: var(--green-soft);
 }
 
@@ -223,7 +306,117 @@ p {
   width: 192px;
   height: 192px;
   color: #265ea7;
+}
+
+.colour-orb.blue .orb-surface {
   background: var(--blue-soft);
+}
+
+.colour-orb.red .orb-drift {
+  animation: drift-red 8.2s ease-in-out infinite;
+}
+
+.colour-orb.yellow .orb-drift {
+  animation: drift-yellow 7s ease-in-out -1.8s infinite;
+}
+
+.colour-orb.green .orb-drift {
+  animation: drift-green 9.4s ease-in-out -3.1s infinite;
+}
+
+.colour-orb.blue .orb-drift {
+  animation: drift-blue 10.2s ease-in-out -2.5s infinite;
+}
+
+.colour-orb.yellow .orb-surface {
+  animation-duration: 7.1s;
+  animation-delay: -2.2s;
+}
+
+.colour-orb.green .orb-surface {
+  animation-duration: 10s;
+  animation-delay: -4.2s;
+}
+
+.colour-orb.blue .orb-surface {
+  animation-duration: 11s;
+  animation-delay: -2.7s;
+}
+
+@keyframes orb-morph {
+  0%,
+  100% {
+    border-radius: 50% 48% 52% 49% / 48% 53% 47% 52%;
+  }
+  33% {
+    border-radius: 46% 54% 48% 52% / 54% 46% 53% 47%;
+  }
+  66% {
+    border-radius: 53% 47% 54% 46% / 46% 52% 48% 54%;
+  }
+}
+
+@keyframes drift-red {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  40% {
+    transform: translate(-5px, -9px);
+  }
+  72% {
+    transform: translate(5px, -3px);
+  }
+}
+
+@keyframes drift-yellow {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  35% {
+    transform: translate(7px, -12px);
+  }
+  70% {
+    transform: translate(-4px, 5px);
+  }
+}
+
+@keyframes drift-green {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  37% {
+    transform: translate(-7px, 5px);
+  }
+  72% {
+    transform: translate(4px, -6px);
+  }
+}
+
+@keyframes drift-blue {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  42% {
+    transform: translate(5px, 6px);
+  }
+  76% {
+    transform: translate(-4px, -5px);
+  }
+}
+
+@keyframes orb-ripple {
+  0% {
+    opacity: 0.34;
+    transform: scale(0.94);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.11);
+  }
 }
 
 .profiles {
@@ -261,11 +454,13 @@ p {
   color: inherit;
   perspective: 1200px;
   text-align: left;
+  scroll-margin-top: 32px;
   transition: transform 180ms ease, filter 180ms ease;
 }
 
 .profile-card:hover,
-.profile-card:focus-visible {
+.profile-card:focus-visible,
+.profile-card.spotlight {
   transform: translateY(-7px);
   filter: drop-shadow(0 18px 22px rgba(33, 48, 44, 0.15));
 }
@@ -285,6 +480,10 @@ p {
 
 .profile-card.flipped .profile-flipper {
   transform: rotateY(180deg);
+}
+
+.profile-card.spotlight .profile-face {
+  animation: card-spotlight 1.3s ease-out;
 }
 
 .profile-face {
@@ -392,6 +591,18 @@ p {
   color: var(--ink);
   font-size: 14px;
   line-height: 1.53;
+}
+
+@keyframes card-spotlight {
+  0% {
+    box-shadow: 0 0 0 0 currentColor, var(--shadow);
+  }
+  30% {
+    box-shadow: 0 0 0 3px currentColor, 0 20px 48px rgba(33, 48, 44, 0.14);
+  }
+  100% {
+    box-shadow: 0 0 0 0 currentColor, var(--shadow);
+  }
 }
 
 .intro-cards {
@@ -1011,6 +1222,42 @@ p {
   stroke-width: 1.9;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+@media (hover: none) {
+  .colour-orb:hover .orb-surface {
+    transform: none;
+    filter: none;
+  }
+
+  .colour-orb:hover .orb-surface::after {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .colour-orb,
+  .orb-surface,
+  .profile-card,
+  .profile-flipper,
+  .scroll-top {
+    transition-duration: 1ms;
+  }
+
+  .orb-drift,
+  .orb-surface,
+  .orb-surface::after,
+  .profile-card.spotlight .profile-face {
+    animation: none;
+  }
+
+  .colour-orb:hover .orb-surface,
+  .colour-orb:focus-visible .orb-surface,
+  .profile-card:hover,
+  .profile-card:focus-visible,
+  .profile-card.spotlight {
+    transform: none;
+  }
 }
 
 @media (max-width: 860px) {

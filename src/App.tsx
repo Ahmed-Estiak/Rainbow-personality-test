@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import { questions, type Dimension, type Question } from "./data/questions";
 import {
   calculateScores,
@@ -249,6 +249,67 @@ function Intro({
   onNext: () => void;
 }) {
   const [flippedCard, setFlippedCard] = useState<Colour | null>(null);
+  const [highlightedCard, setHighlightedCard] = useState<Colour | null>(null);
+  const spectrumRef = useRef<HTMLDivElement>(null);
+  const highlightTimerRef = useRef<number | undefined>(undefined);
+
+  useEffect(
+    () => () => {
+      window.clearTimeout(highlightTimerRef.current);
+    },
+    [],
+  );
+
+  function resetBubbleMotion() {
+    spectrumRef.current?.querySelectorAll<HTMLElement>(".colour-orb").forEach((orb) => {
+      orb.style.setProperty("--pull-x", "0px");
+      orb.style.setProperty("--pull-y", "0px");
+      orb.style.setProperty("--glow-x", "50%");
+      orb.style.setProperty("--glow-y", "35%");
+      orb.style.setProperty("--proximity", "0");
+    });
+  }
+
+  function moveBubbles(event: PointerEvent<HTMLDivElement>) {
+    if (event.pointerType === "touch") {
+      return;
+    }
+
+    spectrumRef.current?.querySelectorAll<HTMLElement>(".colour-orb").forEach((orb) => {
+      const bounds = orb.getBoundingClientRect();
+      const centreX = bounds.left + bounds.width / 2;
+      const centreY = bounds.top + bounds.height / 2;
+      const offsetX = event.clientX - centreX;
+      const offsetY = event.clientY - centreY;
+      const distance = Math.hypot(offsetX, offsetY);
+      const proximity = Math.max(0, 1 - distance / 245);
+      const pull = 16 * proximity;
+      const directionX = distance ? offsetX / distance : 0;
+      const directionY = distance ? offsetY / distance : 0;
+      const glowX = ((event.clientX - bounds.left) / bounds.width) * 100;
+      const glowY = ((event.clientY - bounds.top) / bounds.height) * 100;
+
+      orb.style.setProperty("--pull-x", `${directionX * pull}px`);
+      orb.style.setProperty("--pull-y", `${directionY * pull}px`);
+      orb.style.setProperty("--glow-x", `${Math.min(100, Math.max(0, glowX))}%`);
+      orb.style.setProperty("--glow-y", `${Math.min(100, Math.max(0, glowY))}%`);
+      orb.style.setProperty("--proximity", proximity.toFixed(3));
+    });
+  }
+
+  function revealProfile(colour: Colour) {
+    setHighlightedCard(colour);
+    window.clearTimeout(highlightTimerRef.current);
+    highlightTimerRef.current = window.setTimeout(() => {
+      setHighlightedCard(null);
+    }, 1350);
+    document.getElementById(`profile-${colour.toLowerCase()}`)?.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "auto"
+        : "smooth",
+      block: "center",
+    });
+  }
 
   return (
     <main className="intro">
@@ -280,11 +341,28 @@ function Intro({
             )}
           </div>
         </div>
-        <div className="hero-spectrum" aria-hidden="true">
-          <div className="colour-orb red">RED</div>
-          <div className="colour-orb yellow">YELLOW</div>
-          <div className="colour-orb green">GREEN</div>
-          <div className="colour-orb blue">BLUE</div>
+        <div
+          className="hero-spectrum"
+          ref={spectrumRef}
+          onPointerMove={moveBubbles}
+          onPointerLeave={resetBubbleMotion}
+        >
+          {(["Red", "Yellow", "Green", "Blue"] as Colour[]).map((colour) => (
+            <button
+              className={`colour-orb ${colourDetails[colour].cssClass}`}
+              key={colour}
+              type="button"
+              aria-label={`View the ${colour} personality`}
+              onClick={() => revealProfile(colour)}
+            >
+              <span className="orb-drift">
+                <span className="orb-surface">
+                  <span className="orb-shine" aria-hidden="true" />
+                  <span className="orb-label">{colour.toUpperCase()}</span>
+                </span>
+              </span>
+            </button>
+          ))}
         </div>
       </section>
       <section className="profiles" aria-labelledby="profiles-title">
@@ -297,8 +375,9 @@ function Intro({
             <button
               className={`profile-card ${colourDetails[profile.colour].cssClass} ${
                 flippedCard === profile.colour ? "flipped" : ""
-              }`}
+              } ${highlightedCard === profile.colour ? "spotlight" : ""}`}
               key={profile.colour}
+              id={`profile-${profile.colour.toLowerCase()}`}
               type="button"
               aria-pressed={flippedCard === profile.colour}
               aria-label={
