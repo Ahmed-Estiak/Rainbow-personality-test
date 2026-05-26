@@ -1101,6 +1101,38 @@ p {
   stroke: var(--blue);
 }
 
+.area,
+.area:hover,
+.area:focus {
+  transition: fill 180ms ease, stroke 180ms ease, filter 180ms ease;
+}
+
+.area:hover,
+.area:focus {
+  filter: saturate(1.25) brightness(1.1);
+  cursor: pointer;
+}
+
+.area.red:hover,
+.area.red:focus {
+  fill: rgba(221, 85, 71, 0.62);
+}
+
+.area.yellow:hover,
+.area.yellow:focus {
+  fill: rgba(225, 164, 31, 0.62);
+}
+
+.area.green:hover,
+.area.green:focus {
+  fill: rgba(35, 130, 95, 0.62);
+}
+
+.area.blue:hover,
+.area.blue:focus {
+  fill: rgba(52, 116, 197, 0.62);
+}
+
 .axis-label text {
   fill: var(--ink);
   font-size: 15px;
