@@ -36,6 +36,15 @@ GREEN  = (D * A) / 2
 Each raw dimension ranges from `10` to `50`. Each calculated colour area
 ranges from `50` to `1250`.
 
+The displayed personality profiles are:
+
+| Colour | Team role |
+| --- | --- |
+| Fiery Red | The Driver / Leader |
+| Sunshine Yellow | The Influencer / Communicator |
+| Earth Green | The Supporter / Team Player |
+| Cool Blue | The Analyst / Planner |
+
 ## Development
 
 ```bash

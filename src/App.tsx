@@ -21,6 +21,7 @@ const ratings: { value: Rating; label: string }[] = [
 ];
 const personalityProfiles: {
   colour: Colour;
+  name: string;
   title: string;
   description: string;
   image: string;
@@ -29,45 +30,53 @@ const personalityProfiles: {
 }[] = [
   {
     colour: "Red",
-    title: "The Driver",
+    name: "Fiery Red",
+    title: "The Driver / Leader",
     description:
-      "Effective and energetic. Focused on goals, momentum and visible success.",
+      "Bold, decisive and results-focused. Brings energy and direction to a team.",
     image: "avatars/red.jpg",
     detailImage: "avatars/red-detail.jpg",
     interpretation:
-      "Effective, optimistic, goal oriented, energetic. Dominating and hotheaded. Wants to be the best and to be successful.",
+      "Effective, optimistic, goal-oriented and energetic. A decisive leader who wants the team to succeed, but can become dominating or hotheaded.",
   },
   {
     colour: "Yellow",
-    title: "The Explorer",
+    name: "Sunshine Yellow",
+    title: "The Influencer / Communicator",
     description:
-      "Full of ideas and flexible. Energised by freedom and new possibilities.",
+      "Expressive, flexible and idea-driven. Connects people through enthusiasm.",
     image: "avatars/yellow.jpg",
     detailImage: "avatars/yellow-detail.jpg",
     interpretation:
-      "Lots of ideas, 'airy'. Flexible and impulsive. Not fond of rules and procedures. Wants freedom.",
-  },
-  {
-    colour: "Blue",
-    title: "The Anchor",
-    description:
-      "Persistent and thoughtful. Values stability, care and considered decisions.",
-    image: "avatars/blue.jpg",
-    detailImage: "avatars/blue-detail.jpg",
-    interpretation:
-      "Persistent and stable, speculative and conscientious. Does not like to be criticised. Wants stability and safety.",
+      "Full of ideas, flexible and spontaneous. A natural communicator who energises others, values freedom and is not fond of rigid procedures.",
   },
   {
     colour: "Green",
-    title: "The Coordinator",
+    name: "Earth Green",
+    title: "The Supporter / Team Player",
     description:
-      "Organised and quality-aware. Brings order and dependable coordination.",
+      "Patient, dependable and cooperative. Helps a team stay supported and coordinated.",
     image: "avatars/green.jpg",
     detailImage: "avatars/green-detail.jpg",
     interpretation:
-      "The 'bureacrat', is good at sorting ideas and coordinating activities. Is sceptical towards the quality of work. Likes order and stability.",
+      "Supportive and dependable in a team, with a talent for sorting ideas and coordinating activities. Values order and may be critical of quality.",
+  },
+  {
+    colour: "Blue",
+    name: "Cool Blue",
+    title: "The Analyst / Planner",
+    description:
+      "Thoughtful, structured and careful. Turns complexity into clear plans and decisions.",
+    image: "avatars/blue.jpg",
+    detailImage: "avatars/blue-detail.jpg",
+    interpretation:
+      "Persistent, stable and conscientious. An analytical planner who values quality, safety and well-considered decisions, and may be sensitive to criticism.",
   },
 ];
+
+function getPersonalityProfile(colour: Colour) {
+  return personalityProfiles.find((profile) => profile.colour === colour)!;
+}
 
 type View = "intro" | "test" | "result";
 
@@ -347,18 +356,21 @@ function Intro({
           onPointerMove={moveBubbles}
           onPointerLeave={resetBubbleMotion}
         >
-          {(["Red", "Yellow", "Green", "Blue"] as Colour[]).map((colour) => (
+          {personalityProfiles.map((profile) => (
             <button
-              className={`colour-orb ${colourDetails[colour].cssClass}`}
-              key={colour}
+              className={`colour-orb ${colourDetails[profile.colour].cssClass}`}
+              key={profile.colour}
               type="button"
-              aria-label={`View the ${colour} personality`}
-              onClick={() => revealProfile(colour)}
+              aria-label={`View ${profile.name}, ${profile.title}`}
+              onClick={() => revealProfile(profile.colour)}
             >
               <span className="orb-drift">
                 <span className="orb-surface">
                   <span className="orb-shine" aria-hidden="true" />
-                  <span className="orb-label">{colour.toUpperCase()}</span>
+                  <span className="orb-label">
+                    <b>{profile.name.split(" ")[0]}</b>
+                    <span>{profile.colour}</span>
+                  </span>
                 </span>
               </span>
             </button>
@@ -395,10 +407,10 @@ function Intro({
                 <div className="profile-face profile-front">
                   <img
                     src={`${import.meta.env.BASE_URL}${profile.image}`}
-                    alt={`${profile.colour} personality avatar`}
+                    alt={`${profile.name} personality avatar`}
                   />
                   <div className="profile-copy">
-                    <span>{profile.colour}</span>
+                    <span>{profile.name}</span>
                     <h3>{profile.title}</h3>
                     <p>{profile.description}</p>
                     <small>Click to explore</small>
@@ -411,7 +423,7 @@ function Intro({
                     aria-hidden="true"
                   />
                   <div className="profile-copy">
-                    <span>{profile.colour}</span>
+                    <span>{profile.name}</span>
                     <p className="interpretation">{profile.interpretation}</p>
                     <small>Click to return</small>
                   </div>
@@ -627,9 +639,7 @@ function QuestionCard({
 function Results({ scores, onRetake }: { scores: Scores; onRetake: () => void }) {
   const tie = scores.dominant.length > 1;
   const primaryColour = scores.dominant[0];
-  const primaryProfile = personalityProfiles.find(
-    ({ colour }) => colour === primaryColour,
-  )!;
+  const primaryProfile = getPersonalityProfile(primaryColour);
   const rankedColours = (Object.keys(scores.colours) as Colour[]).sort(
     (first, second) => scores.colours[second] - scores.colours[first],
   );
@@ -645,7 +655,7 @@ function Results({ scores, onRetake }: { scores: Scores; onRetake: () => void })
           <div className="dominant-tags">
             {scores.dominant.map((colour) => (
               <span className={colourDetails[colour].cssClass} key={colour}>
-                {colour}
+                {getPersonalityProfile(colour).name}
               </span>
             ))}
           </div>
@@ -657,24 +667,14 @@ function Results({ scores, onRetake }: { scores: Scores; onRetake: () => void })
               ? "Two or more colour areas share the highest score. Your style draws equally on these team roles."
               : primaryProfile.interpretation}
           </p>
-          <div className="dominant-stats">
-            <div>
-              <small>Colour area</small>
-              <strong>{scores.colours[primaryColour]}</strong>
-            </div>
-            <div>
-              <small>Formula</small>
-              <code>{colourDetails[primaryColour].formula}</code>
-            </div>
-          </div>
         </div>
         <div className="result-portrait">
           <img
             src={`${import.meta.env.BASE_URL}${primaryProfile.image}`}
-            alt={`${primaryColour} personality illustration`}
+            alt={`${primaryProfile.name} personality illustration`}
           />
           <span className={colourDetails[primaryColour].cssClass}>
-            {primaryColour.toUpperCase()}
+            {primaryProfile.name.toUpperCase()}
           </span>
         </div>
       </section>
@@ -731,7 +731,7 @@ function Results({ scores, onRetake }: { scores: Scores; onRetake: () => void })
             <div className="score-card-body">
               <div className="score-title">
                 <div>
-                  <span>{profile.colour}</span>
+                  <span>{profile.name}</span>
                   <h3>{profile.title}</h3>
                 </div>
                 <strong>{scores.colours[profile.colour]}</strong>
@@ -842,7 +842,7 @@ function ColourBars({
           <div className="bar-name">
             <span>
               <small>{String(index + 1).padStart(2, "0")}</small>
-              {colour}
+              {getPersonalityProfile(colour).name}
             </span>
             <strong>{colours[colour]}</strong>
           </div>

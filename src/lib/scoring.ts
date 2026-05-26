@@ -18,25 +18,25 @@ export const colourDetails: Record<
   Red: {
     formula: "(A * B) / 2",
     description:
-      "Effective, optimistic, goal-oriented and energetic. You want to succeed and can take the lead decisively.",
+      "Bold, decisive and results-focused. Brings energy and direction as a driver and leader.",
     cssClass: "red",
   },
   Yellow: {
     formula: "(B * C) / 2",
     description:
-      "Idea-driven, flexible and spontaneous. You value freedom and are comfortable exploring alternatives.",
+      "Expressive, flexible and idea-driven. Connects people as an influencer and communicator.",
     cssClass: "yellow",
   },
   Blue: {
     formula: "(C * D) / 2",
     description:
-      "Persistent, thoughtful and conscientious. You value stability, safety and time to consider decisions.",
+      "Thoughtful, structured and conscientious. Creates clarity as an analyst and planner.",
     cssClass: "blue",
   },
   Green: {
     formula: "(D * A) / 2",
     description:
-      "Organised and coordinating. You value quality, order and dependable ways of turning ideas into action.",
+      "Patient, dependable and cooperative. Supports the group as a steady team player.",
     cssClass: "green",
   },
 };

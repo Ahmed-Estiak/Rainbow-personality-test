@@ -242,6 +242,22 @@ p {
 .orb-label {
   position: relative;
   z-index: 1;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.orb-label b {
+  display: block;
+  opacity: 0.72;
+  font-size: 10px;
+  letter-spacing: 0.17em;
+}
+
+.orb-label span {
+  display: block;
+  margin-top: 4px;
+  font-size: 14px;
+  letter-spacing: 0.15em;
 }
 
 .colour-orb:hover .orb-surface,
@@ -472,7 +488,7 @@ p {
 
 .profile-flipper {
   position: relative;
-  min-height: 480px;
+  min-height: 514px;
   border-radius: inherit;
   transform-style: preserve-3d;
   transition: transform 580ms cubic-bezier(0.22, 0.7, 0.16, 1);
@@ -560,7 +576,8 @@ p {
 .profile-copy h3 {
   margin: 13px 0 8px;
   color: var(--ink);
-  font-size: 23px;
+  font-size: 21px;
+  line-height: 1.2;
   letter-spacing: -0.045em;
 }
 
@@ -986,42 +1003,6 @@ p {
   line-height: 1.65;
 }
 
-.dominant-stats {
-  display: flex;
-  gap: 15px;
-  margin-top: 28px;
-}
-
-.dominant-stats div {
-  min-width: 130px;
-  padding: 13px 17px;
-  border: 1px solid rgba(24, 34, 38, 0.06);
-  border-radius: 14px;
-  background: white;
-}
-
-.dominant-stats small {
-  display: block;
-  margin-bottom: 4px;
-  color: var(--ink-soft);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-}
-
-.dominant-stats strong {
-  color: var(--ink);
-  font-size: 28px;
-  letter-spacing: -0.04em;
-}
-
-.dominant-stats code {
-  color: var(--result-accent);
-  font-size: 15px;
-  font-weight: 650;
-}
-
 .result-portrait {
   position: relative;
   overflow: hidden;
@@ -1340,6 +1321,7 @@ p {
 }
 
 .score-title strong {
+  flex: none;
   color: var(--ink);
   font-size: 27px;
   letter-spacing: -0.05em;
@@ -1637,16 +1619,6 @@ p {
 
   .result-description {
     font-size: 15px;
-  }
-
-  .dominant-stats {
-    gap: 8px;
-  }
-
-  .dominant-stats div {
-    flex: 1;
-    min-width: 0;
-    padding: 11px 12px;
   }
 
   .result-portrait img {
