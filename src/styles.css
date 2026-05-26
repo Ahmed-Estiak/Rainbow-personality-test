@@ -1289,8 +1289,8 @@ p {
 .score-card::before {
   position: absolute;
   top: 0;
-  right: 18px;
-  left: 18px;
+  right: 13px;
+  left: 13px;
   height: 4px;
   border-radius: 999px;
   content: "";
