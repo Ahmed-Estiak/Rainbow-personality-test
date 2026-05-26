@@ -393,10 +393,10 @@ function QuadrantChart({
   const radius = 184;
   const length = (dimension: Dimension) =>
     (dimensions[dimension] / 50) * radius;
-  const a = `${centre},${centre - length("A")}`;
-  const b = `${centre + length("B")},${centre}`;
-  const c = `${centre},${centre + length("C")}`;
-  const d = `${centre - length("D")},${centre}`;
+  const a = `${centre - length("A")},${centre}`;
+  const b = `${centre},${centre - length("B")}`;
+  const c = `${centre + length("C")},${centre}`;
+  const d = `${centre},${centre + length("D")}`;
 
   return (
     <svg
@@ -416,19 +416,19 @@ function QuadrantChart({
         );
       })}
       <path className="chart-axis" d={`M ${centre} 48 V 472 M 48 ${centre} H 472`} />
-      <polygon className="area red" points={`${centre},${centre} ${d} ${a}`} />
-      <polygon className="area yellow" points={`${centre},${centre} ${a} ${b}`} />
-      <polygon className="area blue" points={`${centre},${centre} ${b} ${c}`} />
-      <polygon className="area green" points={`${centre},${centre} ${c} ${d}`} />
+      <polygon className="area red" points={`${centre},${centre} ${a} ${b}`} />
+      <polygon className="area yellow" points={`${centre},${centre} ${b} ${c}`} />
+      <polygon className="area blue" points={`${centre},${centre} ${c} ${d}`} />
+      <polygon className="area green" points={`${centre},${centre} ${d} ${a}`} />
       <g className="axis-label">
-        <text x="260" y="29">A</text>
-        <text x="260" y="48">{dimensions.A}</text>
-        <text x="495" y="256">B</text>
-        <text x="495" y="276">{dimensions.B}</text>
-        <text x="260" y="493">C</text>
-        <text x="260" y="512">{dimensions.C}</text>
-        <text x="25" y="256">D</text>
-        <text x="25" y="276">{dimensions.D}</text>
+        <text x="25" y="256">A</text>
+        <text x="25" y="276">{dimensions.A}</text>
+        <text x="260" y="29">B</text>
+        <text x="260" y="48">{dimensions.B}</text>
+        <text x="495" y="256">C</text>
+        <text x="495" y="276">{dimensions.C}</text>
+        <text x="260" y="493">D</text>
+        <text x="260" y="512">{dimensions.D}</text>
       </g>
       <g className="quadrant-label">
         <text className="red" x="176" y="166">RED</text>

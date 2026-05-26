@@ -16,25 +16,25 @@ export const colourDetails: Record<
   { formula: string; description: string; cssClass: string }
 > = {
   Red: {
-    formula: "(D * A) / 2",
+    formula: "(A * B) / 2",
     description:
       "Effective, optimistic, goal-oriented and energetic. You want to succeed and can take the lead decisively.",
     cssClass: "red",
   },
   Yellow: {
-    formula: "(A * B) / 2",
+    formula: "(B * C) / 2",
     description:
       "Idea-driven, flexible and spontaneous. You value freedom and are comfortable exploring alternatives.",
     cssClass: "yellow",
   },
   Blue: {
-    formula: "(B * C) / 2",
+    formula: "(C * D) / 2",
     description:
       "Persistent, thoughtful and conscientious. You value stability, safety and time to consider decisions.",
     cssClass: "blue",
   },
   Green: {
-    formula: "(C * D) / 2",
+    formula: "(D * A) / 2",
     description:
       "Organised and coordinating. You value quality, order and dependable ways of turning ideas into action.",
     cssClass: "green",
@@ -53,10 +53,10 @@ export function calculateScores(answers: Answers): Scores {
   });
 
   const colours: Record<Colour, number> = {
-    Red: (dimensions.D * dimensions.A) / 2,
-    Yellow: (dimensions.A * dimensions.B) / 2,
-    Blue: (dimensions.B * dimensions.C) / 2,
-    Green: (dimensions.C * dimensions.D) / 2,
+    Red: (dimensions.A * dimensions.B) / 2,
+    Yellow: (dimensions.B * dimensions.C) / 2,
+    Blue: (dimensions.C * dimensions.D) / 2,
+    Green: (dimensions.D * dimensions.A) / 2,
   };
 
   const highest = Math.max(...Object.values(colours));
