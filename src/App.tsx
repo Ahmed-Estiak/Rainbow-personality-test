@@ -19,6 +19,41 @@ const ratings: { value: Rating; label: string }[] = [
   { value: 4, label: "Often true" },
   { value: 5, label: "Almost always true" },
 ];
+const personalityProfiles: {
+  colour: Colour;
+  title: string;
+  description: string;
+  image: string;
+}[] = [
+  {
+    colour: "Red",
+    title: "The Driver",
+    description:
+      "Effective and energetic. Focused on goals, momentum and visible success.",
+    image: "avatars/red.jpg",
+  },
+  {
+    colour: "Yellow",
+    title: "The Explorer",
+    description:
+      "Full of ideas and flexible. Energised by freedom and new possibilities.",
+    image: "avatars/yellow.jpg",
+  },
+  {
+    colour: "Blue",
+    title: "The Anchor",
+    description:
+      "Persistent and thoughtful. Values stability, care and considered decisions.",
+    image: "avatars/blue.jpg",
+  },
+  {
+    colour: "Green",
+    title: "The Coordinator",
+    description:
+      "Organised and quality-aware. Brings order and dependable coordination.",
+    image: "avatars/green.jpg",
+  },
+];
 
 type View = "intro" | "test" | "result";
 
@@ -179,6 +214,30 @@ function Intro({
           <div className="colour-orb yellow">YELLOW</div>
           <div className="colour-orb green">GREEN</div>
           <div className="colour-orb blue">BLUE</div>
+        </div>
+      </section>
+      <section className="profiles" aria-labelledby="profiles-title">
+        <div className="section-heading">
+          <p className="eyebrow">Four team-role profiles</p>
+          <h2 id="profiles-title">Which colour will lead your rainbow?</h2>
+        </div>
+        <div className="profile-cards">
+          {personalityProfiles.map((profile) => (
+            <article
+              className={`profile-card ${colourDetails[profile.colour].cssClass}`}
+              key={profile.colour}
+            >
+              <img
+                src={`${import.meta.env.BASE_URL}${profile.image}`}
+                alt={`${profile.colour} personality avatar`}
+              />
+              <div className="profile-copy">
+                <span>{profile.colour}</span>
+                <h3>{profile.title}</h3>
+                <p>{profile.description}</p>
+              </div>
+            </article>
+          ))}
         </div>
       </section>
       <section className="intro-cards" aria-label="How the test works">

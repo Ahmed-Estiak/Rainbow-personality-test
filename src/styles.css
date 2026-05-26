@@ -226,6 +226,106 @@ p {
   background: var(--blue-soft);
 }
 
+.profiles {
+  margin: 4px 0 48px;
+}
+
+.section-heading {
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.section-heading .eyebrow {
+  margin-bottom: 12px;
+}
+
+.section-heading h2 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(28px, 3.4vw, 39px);
+  font-weight: 500;
+  letter-spacing: -0.05em;
+}
+
+.profile-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+}
+
+.profile-card {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(24, 34, 38, 0.05);
+  border-radius: 21px;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.profile-card::before {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 5px;
+  content: "";
+  background: currentColor;
+}
+
+.profile-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 0.82;
+  object-fit: cover;
+  object-position: center 36%;
+}
+
+.profile-copy {
+  padding: 20px 21px 25px;
+}
+
+.profile-copy span {
+  display: inline-flex;
+  min-height: 27px;
+  align-items: center;
+  padding: 0 13px;
+  border-radius: 999px;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.profile-card.red .profile-copy span {
+  background: var(--red);
+}
+
+.profile-card.yellow .profile-copy span {
+  background: var(--yellow);
+}
+
+.profile-card.blue .profile-copy span {
+  background: var(--blue);
+}
+
+.profile-card.green .profile-copy span {
+  background: var(--green);
+}
+
+.profile-copy h3 {
+  margin: 13px 0 8px;
+  color: var(--ink);
+  font-size: 23px;
+  letter-spacing: -0.045em;
+}
+
+.profile-copy p {
+  color: var(--ink-soft);
+  font-size: 14px;
+  line-height: 1.56;
+}
+
 .intro-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -733,6 +833,7 @@ p {
   }
 
   .intro-cards,
+  .profile-cards,
   .result-layout,
   .score-grid {
     grid-template-columns: 1fr 1fr;
@@ -811,6 +912,7 @@ p {
   }
 
   .intro-cards,
+  .profile-cards,
   .result-layout,
   .score-grid {
     grid-template-columns: 1fr;
