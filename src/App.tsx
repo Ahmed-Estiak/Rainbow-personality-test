@@ -1,0 +1,480 @@
+import { useEffect, useMemo, useState } from "react";
+import { questions, type Dimension, type Question } from "./data/questions";
+import {
+  calculateScores,
+  colourDetails,
+  type Answers,
+  type Colour,
+  type Rating,
+  type Scores,
+} from "./lib/scoring";
+
+const PAGE_SIZE = 5;
+const TOTAL_PAGES = questions.length / PAGE_SIZE;
+const STORAGE_KEY = "rainbow-test-answers";
+const ratings: { value: Rating; label: string }[] = [
+  { value: 1, label: "Hardly ever / never true" },
+  { value: 2, label: "Sometimes true" },
+  { value: 3, label: "True approximately half the time" },
+  { value: 4, label: "Often true" },
+  { value: 5, label: "Almost always true" },
+];
+
+type View = "intro" | "test" | "result";
+
+function readSavedAnswers(): Answers {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? (JSON.parse(saved) as Answers) : {};
+  } catch {
+    return {};
+  }
+}
+
+function App() {
+  const [view, setView] = useState<View>("intro");
+  const [page, setPage] = useState(0);
+  const [answers, setAnswers] = useState<Answers>(readSavedAnswers);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(answers));
+  }, [answers]);
+
+  const answered = Object.keys(answers).length;
+  const pageQuestions = questions.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+  const pageComplete = pageQuestions.every(({ id }) => answers[id] !== undefined);
+  const scores = useMemo(
+    () => (view === "result" ? calculateScores(answers) : undefined),
+    [answers, view],
+  );
+
+  function choose(questionId: number, value: Rating) {
+    setAnswers((current) => ({ ...current, [questionId]: value }));
+    setMessage("");
+  }
+
+  function advance() {
+    if (!pageComplete) {
+      setMessage("Choose a response for each statement on this page to continue.");
+      return;
+    }
+
+    setMessage("");
+    if (page === TOTAL_PAGES - 1) {
+      setView("result");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    setPage((current) => current + 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function restart() {
+    localStorage.removeItem(STORAGE_KEY);
+    setAnswers({});
+    setPage(0);
+    setView("intro");
+    setMessage("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function startFresh() {
+    localStorage.removeItem(STORAGE_KEY);
+    setAnswers({});
+    setPage(0);
+    setView("test");
+    setMessage("");
+  }
+
+  return (
+    <div className="app-shell">
+      <Header onHome={() => setView("intro")} />
+      {view === "intro" && (
+        <Intro
+          answered={answered}
+          onStart={startFresh}
+          onResume={() => setView("test")}
+          onReset={restart}
+        />
+      )}
+      {view === "test" && (
+        <TestForm
+          page={page}
+          questions={pageQuestions}
+          answers={answers}
+          answered={answered}
+          message={message}
+          onChoose={choose}
+          onPrevious={() => {
+            setMessage("");
+            setPage((current) => Math.max(0, current - 1));
+          }}
+          onNext={advance}
+        />
+      )}
+      {view === "result" && scores && (
+        <Results scores={scores} onRetake={restart} />
+      )}
+      <Footer />
+    </div>
+  );
+}
+
+function Header({ onHome }: { onHome: () => void }) {
+  return (
+    <header className="site-header">
+      <button className="brand" type="button" onClick={onHome}>
+        <span className="brand-spectrum" />
+        Rainbow Test
+      </button>
+      <span className="header-note">Common roles in teams</span>
+    </header>
+  );
+}
+
+function Intro({
+  answered,
+  onStart,
+  onResume,
+  onReset,
+}: {
+  answered: number;
+  onStart: () => void;
+  onResume: () => void;
+  onReset: () => void;
+}) {
+  return (
+    <main className="intro">
+      <section className="hero">
+        <div className="hero-copy">
+          <p className="eyebrow">Personality reflection for teamwork</p>
+          <h1>
+            The Rainbow
+            <br />
+            Personality Test
+          </h1>
+          <p className="lead">
+            Discover the team role tendencies behind your choices. Answer 40
+            short statements and see your profile take shape in four colours.
+          </p>
+          <div className="actions">
+            <button className="primary" type="button" onClick={onStart}>
+              {answered > 0 ? "Start over" : "Start the test"}
+            </button>
+            {answered > 0 && (
+              <>
+                <button className="secondary" type="button" onClick={onResume}>
+                  Resume ({answered}/40)
+                </button>
+                <button className="text-action" type="button" onClick={onReset}>
+                  Clear saved answers
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+        <div className="hero-spectrum" aria-hidden="true">
+          <div className="colour-orb red">RED</div>
+          <div className="colour-orb yellow">YELLOW</div>
+          <div className="colour-orb green">GREEN</div>
+          <div className="colour-orb blue">BLUE</div>
+        </div>
+      </section>
+      <section className="intro-cards" aria-label="How the test works">
+        <InfoCard title="40 statements" body="Rate each statement from hardly ever true to almost always true." />
+        <InfoCard title="Four dimensions" body="Your responses produce A, B, C and D scores for team tendencies." />
+        <InfoCard title="A visual result" body="Four connected colour areas reveal your dominant rainbow profile." />
+      </section>
+      <p className="privacy-note">
+        Your responses are calculated on this device and are not submitted to a server.
+      </p>
+    </main>
+  );
+}
+
+function InfoCard({ title, body }: { title: string; body: string }) {
+  return (
+    <article className="info-card">
+      <h2>{title}</h2>
+      <p>{body}</p>
+    </article>
+  );
+}
+
+function TestForm({
+  page,
+  questions: displayedQuestions,
+  answers,
+  answered,
+  message,
+  onChoose,
+  onPrevious,
+  onNext,
+}: {
+  page: number;
+  questions: Question[];
+  answers: Answers;
+  answered: number;
+  message: string;
+  onChoose: (id: number, value: Rating) => void;
+  onPrevious: () => void;
+  onNext: () => void;
+}) {
+  return (
+    <main className="test-page">
+      <div className="test-heading">
+        <div>
+          <p className="eyebrow">The questionnaire</p>
+          <h1>How well does each statement fit you?</h1>
+        </div>
+        <div className="progress-copy">
+          <strong>{answered}</strong> / 40 answered
+        </div>
+      </div>
+      <div className="progress-track" aria-label={`${answered} of 40 answered`}>
+        <div style={{ width: `${(answered / questions.length) * 100}%` }} />
+      </div>
+      <div className="scale-key" aria-label="Response scale">
+        {ratings.map(({ value, label }) => (
+          <span key={value}>
+            <b>{value}</b> {label}
+          </span>
+        ))}
+      </div>
+      <section className="question-list" aria-label={`Statements ${page * 5 + 1} to ${page * 5 + 5}`}>
+        {displayedQuestions.map((question) => (
+          <QuestionCard
+            key={question.id}
+            question={question}
+            selected={answers[question.id]}
+            onChoose={onChoose}
+          />
+        ))}
+      </section>
+      {message && <p className="form-message" role="alert">{message}</p>}
+      <div className="test-navigation">
+        <button className="secondary" type="button" onClick={onPrevious} disabled={page === 0}>
+          Previous
+        </button>
+        <span>
+          Page {page + 1} of {TOTAL_PAGES}
+        </span>
+        <button className="primary" type="button" onClick={onNext}>
+          {page === TOTAL_PAGES - 1 ? "See my result" : "Next"}
+        </button>
+      </div>
+    </main>
+  );
+}
+
+function QuestionCard({
+  question,
+  selected,
+  onChoose,
+}: {
+  question: Question;
+  selected?: Rating;
+  onChoose: (id: number, value: Rating) => void;
+}) {
+  return (
+    <fieldset className="question-card">
+      <legend>
+        <span className="question-number">{String(question.id).padStart(2, "0")}</span>
+        {question.text}
+      </legend>
+      <div className="rating-options">
+        {ratings.map(({ value, label }) => (
+          <label
+            key={value}
+            className={selected === value ? "selected" : undefined}
+            title={label}
+          >
+            <input
+              type="radio"
+              name={`question-${question.id}`}
+              value={value}
+              checked={selected === value}
+              onChange={() => onChoose(question.id, value)}
+            />
+            <span>{value}</span>
+            <small>{label}</small>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+function Results({ scores, onRetake }: { scores: Scores; onRetake: () => void }) {
+  const profileLabel =
+    scores.dominant.length === 1
+      ? scores.dominant[0]
+      : scores.dominant.join(" + ");
+  const tie = scores.dominant.length > 1;
+
+  return (
+    <main className="results-page">
+      <section className="result-banner">
+        <p className="eyebrow">Your result</p>
+        <h1>
+          {tie ? "Your profile is a blend of" : "Your dominant colour is"}{" "}
+          <span className={colourDetails[scores.dominant[0]].cssClass}>
+            {profileLabel}
+          </span>
+        </h1>
+        <p>
+          {tie
+            ? "Two or more colour areas share the highest score, showing a balanced profile across these roles."
+            : colourDetails[scores.dominant[0]].description}
+        </p>
+      </section>
+      <div className="result-layout">
+        <section className="panel chart-panel">
+          <div className="panel-header">
+            <h2>Rainbow profile map</h2>
+            <p>A, B, C and D form four coloured triangle areas.</p>
+          </div>
+          <QuadrantChart dimensions={scores.dimensions} />
+        </section>
+        <section className="panel comparison-panel">
+          <div className="panel-header">
+            <h2>Colour comparison</h2>
+            <p>Area scores range from 50 to 1,250.</p>
+          </div>
+          <ColourBars colours={scores.colours} dominant={scores.dominant} />
+        </section>
+      </div>
+      <section className="score-grid" aria-label="Detailed scores">
+        {(Object.keys(colourDetails) as Colour[]).map((colour) => (
+          <article
+            key={colour}
+            className={`score-card ${colourDetails[colour].cssClass} ${
+              scores.dominant.includes(colour) ? "dominant" : ""
+            }`}
+          >
+            <div>
+              <h2>{colour}</h2>
+              <code>{colourDetails[colour].formula}</code>
+            </div>
+            <strong>{scores.colours[colour]}</strong>
+            <p>{colourDetails[colour].description}</p>
+          </article>
+        ))}
+      </section>
+      <section className="dimension-summary panel">
+        <div>
+          <h2>Dimension totals</h2>
+          <p>Each raw dimension is the sum of 10 responses.</p>
+        </div>
+        {(Object.keys(scores.dimensions) as Dimension[]).map((dimension) => (
+          <div className="dimension-chip" key={dimension}>
+            <span>{dimension}</span>
+            <strong>{scores.dimensions[dimension]}</strong>
+            <small>/ 50</small>
+          </div>
+        ))}
+      </section>
+      <div className="result-action">
+        <button className="primary" type="button" onClick={onRetake}>
+          Retake the test
+        </button>
+      </div>
+    </main>
+  );
+}
+
+function QuadrantChart({
+  dimensions,
+}: {
+  dimensions: Record<Dimension, number>;
+}) {
+  const centre = 260;
+  const radius = 184;
+  const length = (dimension: Dimension) =>
+    (dimensions[dimension] / 50) * radius;
+  const a = `${centre},${centre - length("A")}`;
+  const b = `${centre + length("B")},${centre}`;
+  const c = `${centre},${centre + length("C")}`;
+  const d = `${centre - length("D")},${centre}`;
+
+  return (
+    <svg
+      className="quadrant-chart"
+      viewBox="0 0 520 520"
+      role="img"
+      aria-label="Four quadrant chart showing red, yellow, blue and green score areas"
+    >
+      {[10, 20, 30, 40, 50].map((tick) => {
+        const size = (tick / 50) * radius;
+        return (
+          <path
+            key={tick}
+            className="chart-grid"
+            d={`M ${centre} ${centre - size} L ${centre + size} ${centre} L ${centre} ${centre + size} L ${centre - size} ${centre} Z`}
+          />
+        );
+      })}
+      <path className="chart-axis" d={`M ${centre} 48 V 472 M 48 ${centre} H 472`} />
+      <polygon className="area red" points={`${centre},${centre} ${a} ${b}`} />
+      <polygon className="area yellow" points={`${centre},${centre} ${b} ${c}`} />
+      <polygon className="area blue" points={`${centre},${centre} ${c} ${d}`} />
+      <polygon className="area green" points={`${centre},${centre} ${d} ${a}`} />
+      <g className="axis-label">
+        <text x="260" y="29">A</text>
+        <text x="260" y="48">{dimensions.A}</text>
+        <text x="495" y="256">B</text>
+        <text x="495" y="276">{dimensions.B}</text>
+        <text x="260" y="493">C</text>
+        <text x="260" y="512">{dimensions.C}</text>
+        <text x="25" y="256">D</text>
+        <text x="25" y="276">{dimensions.D}</text>
+      </g>
+      <g className="quadrant-label">
+        <text className="red" x="337" y="166">RED</text>
+        <text className="yellow" x="336" y="363">YELLOW</text>
+        <text className="blue" x="176" y="363">BLUE</text>
+        <text className="green" x="165" y="166">GREEN</text>
+      </g>
+    </svg>
+  );
+}
+
+function ColourBars({
+  colours,
+  dominant,
+}: {
+  colours: Record<Colour, number>;
+  dominant: Colour[];
+}) {
+  return (
+    <div className="bar-list">
+      {(Object.keys(colours) as Colour[]).map((colour) => (
+        <div className="bar-row" key={colour}>
+          <div className="bar-name">
+            <span>{colour}</span>
+            <strong>{colours[colour]}</strong>
+          </div>
+          <div className="bar-track">
+            <div
+              className={`bar-fill ${colourDetails[colour].cssClass} ${
+                dominant.includes(colour) ? "dominant" : ""
+              }`}
+              style={{ width: `${(colours[colour] / 1250) * 100}%` }}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="site-footer">
+      <p>The Rainbow Personality Test | A reflection tool for common roles in teams</p>
+    </footer>
+  );
+}
+
+export default App;
