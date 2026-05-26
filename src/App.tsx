@@ -190,6 +190,11 @@ function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  function showResult() {
+    setView("result");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   return (
     <div className="app-shell">
       <Header onHome={goHome} />
@@ -203,6 +208,7 @@ function App() {
           onReset={restart}
           onChoose={choose}
           onNext={advance}
+          onShowResult={showResult}
         />
       )}
       {view === "test" && (
@@ -247,6 +253,7 @@ function Intro({
   onReset,
   onChoose,
   onNext,
+  onShowResult,
 }: {
   answered: number;
   answers: Answers;
@@ -256,6 +263,7 @@ function Intro({
   onReset: () => void;
   onChoose: (id: number, value: Rating) => void;
   onNext: () => void;
+  onShowResult: () => void;
 }) {
   const [flippedCard, setFlippedCard] = useState<Colour | null>(null);
   const [highlightedCard, setHighlightedCard] = useState<Colour | null>(null);
@@ -338,6 +346,11 @@ function Intro({
             <button className="primary" type="button" onClick={onStart}>
               {answered > 0 ? "Start over" : "Start the test"}
             </button>
+            {answered === questions.length && (
+              <button className="secondary" type="button" onClick={onShowResult}>
+                See result
+              </button>
+            )}
             {answered > 0 && (
               <>
                 <button className="secondary" type="button" onClick={onResume}>

@@ -1339,6 +1339,23 @@ p {
   line-height: 1.52;
 }
 
+/* Hover float + shadow for result page cards and panels, but not the "How the result is formed" box */
+.results-page .score-card,
+.results-page .panel:not(.dimension-summary) {
+  transition: transform 200ms ease, box-shadow 200ms ease;
+  will-change: transform, box-shadow;
+}
+
+@media (hover: hover) {
+  .results-page .score-card:hover,
+  .results-page .score-card:focus-within,
+  .results-page .panel:not(.dimension-summary):hover,
+  .results-page .panel:not(.dimension-summary):focus-within {
+    transform: translateY(-8px);
+    box-shadow: 0 26px 60px rgba(33, 48, 44, 0.12);
+  }
+}
+
 .dimension-summary {
   display: flex;
   align-items: center;
