@@ -309,8 +309,8 @@ p {
   position: absolute;
   z-index: 2;
   top: 0;
-  right: 24px;
-  left: 24px;
+  right: 17px;
+  left: 17px;
   height: 4px;
   border-radius: 999px;
   content: "";
