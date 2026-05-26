@@ -308,10 +308,11 @@ p {
 .profile-card::before {
   position: absolute;
   z-index: 2;
-  top: 0;
-  right: 0;
-  left: 0;
-  height: 5px;
+  top: 8px;
+  right: 12px;
+  left: 12px;
+  height: 4px;
+  border-radius: 999px;
   content: "";
   background: currentColor;
 }
