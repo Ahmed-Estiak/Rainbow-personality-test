@@ -733,6 +733,23 @@ function Results({ scores, onRetake }: { scores: Scores; onRetake: () => void })
       pageIndex += 1;
     }
 
+    const buttonText = "Retake the test";
+    const buttonWidth = 70;
+    const buttonHeight = 14;
+    const buttonX = (pageWidth - buttonWidth) / 2;
+    const buttonY = pageHeight - margin - buttonHeight;
+    pdf.setFillColor(24, 34, 38);
+    pdf.roundedRect(buttonX, buttonY, buttonWidth, buttonHeight, 4, 4, "F");
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(12);
+    pdf.text(buttonText, pageWidth / 2, buttonY + buttonHeight / 2 + 4, {
+      align: "center",
+      baseline: "middle",
+    });
+    pdf.link(buttonX, buttonY, buttonWidth, buttonHeight, {
+      url: "https://rainbow-personality-test.netlify.app",
+    });
+
     pdf.save("rainbow-personality-your-result.pdf");
   }
 
