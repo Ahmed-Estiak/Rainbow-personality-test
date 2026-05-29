@@ -228,7 +228,6 @@ function App() {
       {view === "result" && scores && (
         <Results scores={scores} onRetake={restart} />
       )}
-      <Disclaimer />
       <Footer />
       <ScrollToTopButton visible={showScrollTop} />
     </div>
@@ -984,13 +983,10 @@ function ColourBars({
   );
 }
 
-function Disclaimer() {
+function Footer() {
   return (
-    <section className="disclaimer" aria-labelledby="disclaimer-title">
-      <div>
-        <p className="eyebrow">Important note</p>
-        <h2 id="disclaimer-title">Disclaimer</h2>
-      </div>
+    <footer className="site-footer">
+      <h2>Disclaimer</h2>
       <p>
         This is an unofficial educational prototype for calculating and visualising
         Rainbow Personality Test results. It is intended for personal reflection
@@ -1002,14 +998,6 @@ function Disclaimer() {
         Original test materials belong to their respective authors or programme
         providers.
       </p>
-    </section>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className="site-footer">
-      <p>© 2026 Rainbow Personality Test. Unofficial educational prototype.</p>
     </footer>
   );
 }
