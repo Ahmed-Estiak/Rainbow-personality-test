@@ -228,6 +228,7 @@ function App() {
       {view === "result" && scores && (
         <Results scores={scores} onRetake={restart} />
       )}
+      <Disclaimer />
       <Footer />
       <ScrollToTopButton visible={showScrollTop} />
     </div>
@@ -881,7 +882,7 @@ function Results({ scores, onRetake }: { scores: Scores; onRetake: () => void })
       </div>
       <div className="result-action">
         <button className="secondary" type="button" onClick={downloadPdf}>
-          Download Your Result
+          Download Result PDF
         </button>
         <button className="primary" type="button" onClick={onRetake}>
           Retake the test
@@ -983,11 +984,32 @@ function ColourBars({
   );
 }
 
+function Disclaimer() {
+  return (
+    <section className="disclaimer" aria-labelledby="disclaimer-title">
+      <div>
+        <p className="eyebrow">Important note</p>
+        <h2 id="disclaimer-title">Disclaimer</h2>
+      </div>
+      <p>
+        This is an unofficial educational prototype for calculating and visualising
+        Rainbow Personality Test results. It is intended for personal reflection
+        and team-building discussion only, not as a clinical, psychological, or
+        professional assessment.
+      </p>
+      <p>
+        No login is required, and no personal data is collected or stored.
+        Original test materials belong to their respective authors or programme
+        providers.
+      </p>
+    </section>
+  );
+}
+
 function Footer() {
   return (
     <footer className="site-footer">
-      <p>Unofficial educational prototype created to support the Rainbow Personality Test calculation. No login or personal data is collected or stored.</p>
-      <p>Original test material belongs to its respective authors/programme providers.</p>
+      <p>© 2026 Rainbow Personality Test. Unofficial educational prototype.</p>
     </footer>
   );
 }
