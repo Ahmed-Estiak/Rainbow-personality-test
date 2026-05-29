@@ -986,7 +986,8 @@ function ColourBars({
 function Footer() {
   return (
     <footer className="site-footer">
-      <p>The Rainbow Personality Test | A reflection tool for common roles in teams</p>
+      <p>Unofficial educational prototype created to support the Rainbow Personality Test calculation. No login or personal data is collected or stored.</p>
+      <p>Original test material belongs to its respective authors/programme providers.</p>
     </footer>
   );
 }
