@@ -88,6 +88,173 @@ const varkLabels: Record<VarkMode, string> = {
   K: "Kinesthetic",
 };
 
+const varkQuestions: {
+  id: number;
+  text: string;
+  options: Record<"a" | "b" | "c" | "d", string>;
+}[] = [
+  {
+    id: 1,
+    text: "You are helping someone who wants to go to your airport, the centre of town or railway station. You would:",
+    options: {
+      a: "Go with her.",
+      b: "Tell her the directions.",
+      c: "Write down the directions.",
+      d: "Draw, show, or give her a map.",
+    },
+  },
+  {
+    id: 2,
+    text: "A website has a video showing how to make a special graph. You would learn most from:",
+    options: {
+      a: "Seeing the diagrams.",
+      b: "Listening.",
+      c: "Reading the words.",
+      d: "Watching the actions.",
+    },
+  },
+  {
+    id: 3,
+    text: "You are planning a vacation for a group and want feedback about the plan. You would:",
+    options: {
+      a: "Describe some of the highlights they will experience.",
+      b: "Use a map to show them the places.",
+      c: "Give them a copy of the printed itinerary.",
+      d: "Phone, text or email them.",
+    },
+  },
+  {
+    id: 4,
+    text: "You are going to cook something as a special treat. You would:",
+    options: {
+      a: "Cook something you know without instructions.",
+      b: "Ask friends for suggestions.",
+      c: "Look online or in cookbooks for ideas from pictures.",
+      d: "Use a good recipe.",
+    },
+  },
+  {
+    id: 5,
+    text: "A group of tourists want to learn about parks or wildlife reserves in your area. You would:",
+    options: {
+      a: "Talk about, or arrange a talk about, parks or wildlife reserves.",
+      b: "Show them maps and internet pictures.",
+      c: "Take them to a park or wildlife reserve and walk with them.",
+      d: "Give them a book or pamphlets about the parks or wildlife reserves.",
+    },
+  },
+  {
+    id: 6,
+    text: "You are about to purchase a digital camera or mobile phone. Other than price, what would most influence your decision?",
+    options: {
+      a: "Trying or testing it.",
+      b: "Reading the details or checking its features online.",
+      c: "It is a modern design and looks good.",
+      d: "The salesperson telling me about its features.",
+    },
+  },
+  {
+    id: 7,
+    text: "Remember a time when you learned how to do something new, avoiding a physical skill. You learned best by:",
+    options: {
+      a: "Watching a demonstration.",
+      b: "Listening to somebody explaining it and asking questions.",
+      c: "Diagrams, maps and charts.",
+      d: "Written instructions, such as a manual or book.",
+    },
+  },
+  {
+    id: 8,
+    text: "You have a problem with your heart. You would prefer that the doctor:",
+    options: {
+      a: "Gave you something to read to explain what was wrong.",
+      b: "Used a plastic model to show what was wrong.",
+      c: "Described what was wrong.",
+      d: "Showed you a diagram of what was wrong.",
+    },
+  },
+  {
+    id: 9,
+    text: "You want to learn a new program, skill or game on a computer. You would:",
+    options: {
+      a: "Read the written instructions that came with the program.",
+      b: "Talk with people who know about the program.",
+      c: "Use the controls or keyboard.",
+      d: "Follow the diagrams in the book that came with it.",
+    },
+  },
+  {
+    id: 10,
+    text: "I like websites that have:",
+    options: {
+      a: "Things I can click on, shift or try.",
+      b: "Interesting design and visual features.",
+      c: "Interesting written descriptions, lists and explanations.",
+      d: "Audio channels where I can hear music, radio programs or interviews.",
+    },
+  },
+  {
+    id: 11,
+    text: "Other than price, what would most influence your decision to buy a new non-fiction book?",
+    options: {
+      a: "The way it looks is appealing.",
+      b: "Quickly reading parts of it.",
+      c: "A friend talks about it and recommends it.",
+      d: "It has real-life stories, experiences and examples.",
+    },
+  },
+  {
+    id: 12,
+    text: "You are using a book, CD or website to learn how to take photos with your new digital camera. You would like to have:",
+    options: {
+      a: "A chance to ask questions and talk about the camera and its features.",
+      b: "Clear written instructions with lists and bullet points.",
+      c: "Diagrams showing the camera and what each part does.",
+      d: "Many examples of good and poor photos and how to improve them.",
+    },
+  },
+  {
+    id: 13,
+    text: "Do you prefer a teacher or presenter who uses:",
+    options: {
+      a: "Demonstrations, models or practical sessions.",
+      b: "Question and answer, talk, group discussion or guest speakers.",
+      c: "Handouts, books or readings.",
+      d: "Diagrams, charts or graphs.",
+    },
+  },
+  {
+    id: 14,
+    text: "You have finished a competition or test and would like feedback. You would like feedback:",
+    options: {
+      a: "Using examples from what you have done.",
+      b: "Using a written description of your results.",
+      c: "From somebody who talks it through with you.",
+      d: "Using graphs showing what you had achieved.",
+    },
+  },
+  {
+    id: 15,
+    text: "You are going to choose food at a restaurant or cafe. You would:",
+    options: {
+      a: "Choose something that you have had there before.",
+      b: "Listen to the waiter or ask friends to recommend choices.",
+      c: "Choose from the descriptions in the menu.",
+      d: "Look at what others are eating or look at pictures of each dish.",
+    },
+  },
+  {
+    id: 16,
+    text: "You have to make an important speech at a conference or special occasion. You would:",
+    options: {
+      a: "Make diagrams or get graphs to help explain things.",
+      b: "Write a few key words and practice saying your speech over and over.",
+      c: "Write out your speech and learn from reading it over several times.",
+      d: "Gather examples and stories to make the talk real and practical.",
+    },
+  },
+];
+
 const varkScoring: Record<number, Record<"a" | "b" | "c" | "d", VarkMode>> = {
   1: { a: "K", b: "A", c: "R", d: "V" },
   2: { a: "V", b: "A", c: "R", d: "K" },
@@ -121,6 +288,117 @@ const spiRoleNames: Record<SpiRole, string> = {
 };
 const spiSections: SpiSection[] = ["I", "II", "III", "IV", "V", "VI", "VII"];
 const spiLetters: SpiLetter[] = ["a", "b", "c", "d", "e", "f", "g", "h", "i"];
+const spiQuestionGroups: {
+  section: SpiSection;
+  title: string;
+  statements: Record<SpiLetter, string>;
+}[] = [
+  {
+    section: "I",
+    title: "What I believe I can contribute to a team",
+    statements: {
+      a: "I think I can quickly see and take advantage of new opportunities.",
+      b: "I can work well with a very wide range of people.",
+      c: "Producing ideas is one of my natural assets.",
+      d: "I can draw people out whenever I detect they have something of value to contribute.",
+      e: "I can be relied upon to finish any task I undertake.",
+      f: "My technical knowledge and experience are usually my major assets.",
+      g: "I am prepared to be blunt and outspoken in the cause of making the right things happen.",
+      h: "I can usually tell whether a plan or idea will fit a particular situation.",
+      i: "I can offer a reasoned and unbiased case for alternative courses of action.",
+    },
+  },
+  {
+    section: "II",
+    title: "If I have a possible shortcoming in teamwork, it could be that",
+    statements: {
+      a: "I am not at ease unless meetings are well structured, controlled and well conducted.",
+      b: "I am inclined to be too generous towards others who have a valid viewpoint.",
+      c: "I am reluctant to contribute unless the subject contains an area I know well.",
+      d: "I have a tendency to talk a lot once the group gets on to a new topic.",
+      e: "My objective outlook makes it difficult for me to join in readily with colleagues.",
+      f: "I am sometimes seen as forceful and authoritarian when dealing with important issues.",
+      g: "I find it difficult to lead from the front because I am responsive to group atmosphere.",
+      h: "I get too caught up in ideas that occur to me and lose track of what is happening.",
+      i: "I am reluctant to express opinions on proposals that are incomplete or insufficiently detailed.",
+    },
+  },
+  {
+    section: "III",
+    title: "When involved in a project with other people",
+    statements: {
+      a: "I have an aptitude for influencing people without pressurising them.",
+      b: "I am generally effective in preventing careless mistakes or omissions.",
+      c: "I like to press for action so the meeting does not lose sight of the main objective.",
+      d: "I can be counted on to contribute something original.",
+      e: "I am always ready to back a good suggestion in the common interest.",
+      f: "I am quick to see the possibilities in new ideas and developments.",
+      g: "I try to maintain my sense of professionalism.",
+      h: "My capacity for judgment can help to bring about the right decisions.",
+      i: "I can be relied on to bring an organised approach to the demands of a job.",
+    },
+  },
+  {
+    section: "IV",
+    title: "My characteristic approach to group work is that",
+    statements: {
+      a: "I maintain a quiet interest in getting to know colleagues better.",
+      b: "I contribute where I know what I am talking about.",
+      c: "I am not reluctant to challenge the view of others or hold a minority view.",
+      d: "I can usually find an argument to refute unsound propositions.",
+      e: "I have a talent for making things work once a plan has been put into operation.",
+      f: "I prefer to avoid the obvious and open up lines that have not been explored.",
+      g: "I bring a touch of perfectionism to any job I undertake.",
+      h: "I like to be the one who makes contacts outside the group or firm.",
+      i: "I listen to all views but have no hesitation making up my mind when a decision is needed.",
+    },
+  },
+  {
+    section: "V",
+    title: "I gain satisfaction in a job because",
+    statements: {
+      a: "I enjoy analysing situations and weighing up all the possible choices.",
+      b: "I am interested in finding practical solutions to problems.",
+      c: "I like to feel I am fostering good working relationships.",
+      d: "I can have a strong influence on decisions.",
+      e: "I have a chance of meeting new people with different ideas.",
+      f: "I can get people to agree on priorities.",
+      g: "I feel in my element where I can give a task my full attention.",
+      h: "I can find an opportunity to stretch my imagination.",
+      i: "I feel that I am using my special qualifications and training to advantage.",
+    },
+  },
+  {
+    section: "VI",
+    title: "If I am suddenly given a difficult task with limited time and unfamiliar people",
+    statements: {
+      a: "I like to read up as much as I conveniently can on a subject.",
+      b: "I would devise a solution of my own and then try to sell it to the group.",
+      c: "I would be ready to work with the person who showed the most positive approach.",
+      d: "I would reduce the task by establishing how different individuals can contribute.",
+      e: "My natural sense of urgency would help ensure we did not fall behind schedule.",
+      f: "I would keep my cool and maintain my capacity to think straight.",
+      g: "In spite of conflicting pressures I would press ahead with whatever needed to be done.",
+      h: "I would take the lead if the group was making no progress.",
+      i: "I would open up discussions to stimulate new thoughts and get something moving.",
+    },
+  },
+  {
+    section: "VII",
+    title: "With reference to the problems I experience when working in groups",
+    statements: {
+      a: "I am apt to overreact when people hold up progress.",
+      b: "Some people criticise me for being too analytical.",
+      c: "My desire to check important details is not always welcome.",
+      d: "I tend to show boredom unless I am actively engaged with stimulating people.",
+      e: "I find it difficult to get started unless the goals are clear.",
+      f: "I am sometimes poor at putting across complex points that occur to me.",
+      g: "I am conscious of demanding from others the things I cannot do myself.",
+      h: "I am inclined to feel I am wasting my time and would do better on my own.",
+      i: "I hesitate to express my personal views in front of difficult or powerful people.",
+    },
+  },
+];
 const spiAnalysisChart: Record<SpiSection, Record<SpiRole, SpiLetter>> = {
   I: { IMP: "h", CO: "d", SH: "g", PL: "c", RI: "a", ME: "i", TW: "b", CF: "e", SP: "f" },
   II: { IMP: "a", CO: "b", SH: "f", PL: "h", RI: "d", ME: "e", TW: "g", CF: "i", SP: "c" },
@@ -608,22 +886,26 @@ function VarkTool() {
       <p className="tool-copy">
         Tick the answer letters you chose in the questionnaire. More than one answer per question is allowed.
       </p>
-      <div className="vark-grid" aria-label="VARK answer scoring grid">
-        {Array.from({ length: 16 }, (_, index) => index + 1).map((question) => (
-          <div className="vark-row" key={question}>
-            <span>Q{question}</span>
+      <div className="vark-question-list" aria-label="VARK questionnaire">
+        {varkQuestions.map((question) => (
+          <fieldset className="vark-question" key={question.id}>
+            <legend>
+              <span>Q{question.id}</span>
+              {question.text}
+            </legend>
             {(["a", "b", "c", "d"] as const).map((choice) => (
               <label key={choice}>
                 <input
                   type="checkbox"
-                  checked={(answers[Number(question)] ?? []).includes(choice)}
-                  onChange={() => toggle(Number(question), choice)}
+                  checked={(answers[question.id] ?? []).includes(choice)}
+                  onChange={() => toggle(question.id, choice)}
                 />
                 <b>{choice}</b>
-                <small>{varkScoring[Number(question)][choice]}</small>
+                <span>{question.options[choice]}</span>
+                <small>{varkScoring[question.id][choice]}</small>
               </label>
             ))}
-          </div>
+          </fieldset>
         ))}
       </div>
       <div className="tool-results four">
@@ -708,30 +990,35 @@ function SpiTool() {
       <p className="tool-copy">
         For each SPI section, distribute 10 points across letters a-i. The role totals are calculated from the analysis chart.
       </p>
-      <div className="spi-entry-grid" aria-label="SPI point entry grid">
-        <div className="spi-entry-head">
-          <span>Section</span>
-          {spiLetters.map((letter) => (
-            <span key={letter}>{letter}</span>
-          ))}
-          <span>Total</span>
-        </div>
-        {spiSections.map((section) => (
-          <div className={`spi-entry-row ${rowTotals[section] === 10 ? "complete" : ""}`} key={section}>
-            <span>{section}</span>
-            {spiLetters.map((letter) => (
-              <input
-                aria-label={`SPI section ${section} letter ${letter}`}
-                key={letter}
-                min="0"
-                max="10"
-                type="number"
-                value={points[section][letter]}
-                onChange={(event) => setPoint(section, letter, event.target.value)}
-              />
-            ))}
-            <strong>{rowTotals[section]}</strong>
-          </div>
+      <div className="spi-question-list" aria-label="SPI questionnaire">
+        {spiQuestionGroups.map((group) => (
+          <section className="spi-question-group" key={group.section}>
+            <div className="spi-group-heading">
+              <div>
+                <span>Section {group.section}</span>
+                <h3>{group.title}</h3>
+              </div>
+              <strong className={rowTotals[group.section] === 10 ? "complete" : undefined}>
+                {rowTotals[group.section]} / 10
+              </strong>
+            </div>
+            <div className="spi-statement-list">
+              {spiLetters.map((letter) => (
+                <label key={letter}>
+                  <span className="statement-letter">{letter}</span>
+                  <span>{group.statements[letter]}</span>
+                  <input
+                    aria-label={`SPI section ${group.section} letter ${letter}`}
+                    min="0"
+                    max="10"
+                    type="number"
+                    value={points[group.section][letter]}
+                    onChange={(event) => setPoint(group.section, letter, event.target.value)}
+                  />
+                </label>
+              ))}
+            </div>
+          </section>
         ))}
       </div>
       <div className="spi-analysis-table" aria-label="SPI role totals">
