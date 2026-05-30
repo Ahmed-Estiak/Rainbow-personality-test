@@ -949,6 +949,10 @@ p {
   background: var(--green-soft);
 }
 
+.spi-question-group:has(.spi-warning) {
+  border-color: rgba(159, 45, 35, 0.34);
+}
+
 .spi-statement-list {
   display: grid;
   gap: 8px;
@@ -984,6 +988,21 @@ p {
   border-color: var(--ink);
   outline: none;
   box-shadow: 0 0 0 2px rgba(24, 34, 38, 0.08);
+}
+
+.spi-warning,
+.spi-result-warning {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  color: #9f2d23;
+  background: var(--red-soft);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.spi-result-warning {
+  margin-top: 18px;
 }
 
 .spi-entry-grid {
@@ -1051,6 +1070,16 @@ p {
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   margin-top: 18px;
+}
+
+.spi-analysis-table .invalid-score {
+  border-color: rgba(159, 45, 35, 0.22);
+  background: #fff8f6;
+}
+
+.spi-analysis-table .invalid-score strong {
+  color: #9f2d23;
+  font-size: 22px;
 }
 
 .privacy-callout {

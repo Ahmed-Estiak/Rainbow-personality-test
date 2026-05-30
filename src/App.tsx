@@ -939,6 +939,8 @@ function SpiTool() {
       }, {} as Record<SpiSection, number>),
     [points],
   );
+  const invalidSections = spiSections.filter((section) => rowTotals[section] > 10);
+  const hasInvalidSection = invalidSections.length > 0;
   const roleTotals = useMemo(
     () =>
       spiRoles.reduce((totals, role) => {
@@ -951,7 +953,9 @@ function SpiTool() {
     [points],
   );
   const highest = Math.max(...Object.values(roleTotals));
-  const leadingRoles = spiRoles.filter((role) => highest > 0 && roleTotals[role] === highest);
+  const leadingRoles = hasInvalidSection
+    ? []
+    : spiRoles.filter((role) => highest > 0 && roleTotals[role] === highest);
 
   function setPoint(section: SpiSection, letter: SpiLetter, value: string) {
     const numeric = Math.max(0, Math.min(10, Number(value) || 0));
@@ -1018,14 +1022,29 @@ function SpiTool() {
                 </label>
               ))}
             </div>
+            {rowTotals[group.section] > 10 && (
+              <p className="spi-warning" role="alert">
+                Section {group.section} is over 10 points. Reduce this section to exactly 10 before reading the result.
+              </p>
+            )}
           </section>
         ))}
       </div>
+      {hasInvalidSection && (
+        <p className="spi-result-warning" role="alert">
+          SPI result unavailable: section {invalidSections.join(", ")} total must not exceed 10.
+        </p>
+      )}
       <div className="spi-analysis-table" aria-label="SPI role totals">
         {spiRoles.map((role) => (
-          <div className={leadingRoles.includes(role) ? "top-score" : undefined} key={role}>
+          <div
+            className={`${leadingRoles.includes(role) ? "top-score" : ""} ${
+              hasInvalidSection ? "invalid-score" : ""
+            }`}
+            key={role}
+          >
             <span>{role}</span>
-            <strong>{roleTotals[role]}</strong>
+            <strong>{hasInvalidSection ? "N/A" : roleTotals[role]}</strong>
             <small>{spiRoleNames[role]}</small>
           </div>
         ))}
