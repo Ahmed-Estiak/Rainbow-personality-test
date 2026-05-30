@@ -76,6 +76,61 @@ const personalityProfiles: {
   },
 ];
 
+type VarkMode = "V" | "A" | "R" | "K";
+type SpiRole = "IMP" | "CO" | "SH" | "PL" | "RI" | "ME" | "TW" | "CF" | "SP";
+type SpiSection = "I" | "II" | "III" | "IV" | "V" | "VI" | "VII";
+type SpiLetter = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i";
+
+const varkLabels: Record<VarkMode, string> = {
+  V: "Visual",
+  A: "Aural",
+  R: "Read/Write",
+  K: "Kinesthetic",
+};
+
+const varkScoring: Record<number, Record<"a" | "b" | "c" | "d", VarkMode>> = {
+  1: { a: "K", b: "A", c: "R", d: "V" },
+  2: { a: "V", b: "A", c: "R", d: "K" },
+  3: { a: "K", b: "V", c: "R", d: "A" },
+  4: { a: "K", b: "A", c: "V", d: "R" },
+  5: { a: "A", b: "V", c: "K", d: "R" },
+  6: { a: "K", b: "R", c: "V", d: "A" },
+  7: { a: "K", b: "A", c: "V", d: "R" },
+  8: { a: "R", b: "K", c: "A", d: "V" },
+  9: { a: "R", b: "A", c: "K", d: "V" },
+  10: { a: "K", b: "V", c: "R", d: "A" },
+  11: { a: "V", b: "R", c: "A", d: "K" },
+  12: { a: "A", b: "R", c: "V", d: "K" },
+  13: { a: "K", b: "A", c: "R", d: "V" },
+  14: { a: "K", b: "R", c: "A", d: "V" },
+  15: { a: "K", b: "A", c: "R", d: "V" },
+  16: { a: "V", b: "A", c: "R", d: "K" },
+};
+
+const spiRoles: SpiRole[] = ["IMP", "CO", "SH", "PL", "RI", "ME", "TW", "CF", "SP"];
+const spiRoleNames: Record<SpiRole, string> = {
+  IMP: "Implementer",
+  CO: "Coordinator",
+  SH: "Shaper",
+  PL: "Plant",
+  RI: "Resource Investigator",
+  ME: "Monitor Evaluator",
+  TW: "Team Worker",
+  CF: "Completer Finisher",
+  SP: "Specialist",
+};
+const spiSections: SpiSection[] = ["I", "II", "III", "IV", "V", "VI", "VII"];
+const spiLetters: SpiLetter[] = ["a", "b", "c", "d", "e", "f", "g", "h", "i"];
+const spiAnalysisChart: Record<SpiSection, Record<SpiRole, SpiLetter>> = {
+  I: { IMP: "h", CO: "d", SH: "g", PL: "c", RI: "a", ME: "i", TW: "b", CF: "e", SP: "f" },
+  II: { IMP: "a", CO: "b", SH: "f", PL: "h", RI: "d", ME: "e", TW: "g", CF: "i", SP: "c" },
+  III: { IMP: "i", CO: "a", SH: "c", PL: "d", RI: "f", ME: "h", TW: "e", CF: "b", SP: "g" },
+  IV: { IMP: "e", CO: "i", SH: "c", PL: "f", RI: "h", ME: "d", TW: "a", CF: "g", SP: "b" },
+  V: { IMP: "b", CO: "f", SH: "d", PL: "h", RI: "e", ME: "a", TW: "c", CF: "g", SP: "i" },
+  VI: { IMP: "g", CO: "d", SH: "h", PL: "b", RI: "i", ME: "f", TW: "c", CF: "e", SP: "a" },
+  VII: { IMP: "e", CO: "g", SH: "a", PL: "f", RI: "d", ME: "b", TW: "i", CF: "c", SP: "h" },
+};
+
 function getPersonalityProfile(colour: Colour) {
   return personalityProfiles.find((profile) => profile.colour === colour)!;
 }
@@ -192,6 +247,18 @@ function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  function jumpToTool(id: "vark-tool" | "spi-tool") {
+    setPage(0);
+    setView("intro");
+    setMessage("");
+    window.requestAnimationFrame(() => {
+      document.getElementById(id)?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+  }
+
   function showResult() {
     setView("result");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -199,7 +266,7 @@ function App() {
 
   return (
     <div className="app-shell">
-      <Header onHome={goHome} />
+      <Header onHome={goHome} onJumpTool={jumpToTool} />
       {view === "intro" && (
         <Intro
           answered={answered}
@@ -234,14 +301,28 @@ function App() {
   );
 }
 
-function Header({ onHome }: { onHome: () => void }) {
+function Header({
+  onHome,
+  onJumpTool,
+}: {
+  onHome: () => void;
+  onJumpTool: (id: "vark-tool" | "spi-tool") => void;
+}) {
   return (
     <header className="site-header">
       <button className="brand" type="button" onClick={onHome}>
         <span className="brand-spectrum" />
         Rainbow Test
       </button>
-      <span className="header-note">Common roles in teams</span>
+      <div className="header-actions" aria-label="Additional tools">
+        <button type="button" onClick={() => onJumpTool("vark-tool")}>
+          VARK
+        </button>
+        <button type="button" onClick={() => onJumpTool("spi-tool")}>
+          SPI
+        </button>
+        <span className="header-note">Common roles in teams</span>
+      </div>
     </header>
   );
 }
@@ -453,6 +534,10 @@ function Intro({
         <InfoCard title="Four dimensions" body="Your responses produce A, B, C and D scores for team tendencies." />
         <InfoCard title="A visual result" body="Four connected colour areas reveal your dominant rainbow profile." />
       </section>
+      <section className="side-tools" aria-label="Additional questionnaire tools">
+        <VarkTool />
+        <SpiTool />
+      </section>
       <aside className="privacy-callout" aria-label="Privacy note">
         <span className="privacy-line" aria-hidden="true" />
         <div className="privacy-card">
@@ -476,6 +561,185 @@ function Intro({
         onNext={onNext}
       />
     </main>
+  );
+}
+
+function VarkTool() {
+  const [answers, setAnswers] = useState<Record<number, Array<"a" | "b" | "c" | "d">>>({});
+  const scores = useMemo(() => {
+    const totals: Record<VarkMode, number> = { V: 0, A: 0, R: 0, K: 0 };
+    Object.entries(answers).forEach(([questionId, selected]) => {
+      selected.forEach((choice) => {
+        totals[varkScoring[Number(questionId)][choice]] += 1;
+      });
+    });
+    return totals;
+  }, [answers]);
+  const highest = Math.max(...Object.values(scores));
+  const preferred = (Object.keys(scores) as VarkMode[]).filter(
+    (mode) => highest > 0 && scores[mode] === highest,
+  );
+
+  function toggle(question: number, choice: "a" | "b" | "c" | "d") {
+    setAnswers((current) => {
+      const selected = current[question] ?? [];
+      const next = selected.includes(choice)
+        ? selected.filter((item) => item !== choice)
+        : [...selected, choice];
+      return { ...current, [question]: next };
+    });
+  }
+
+  return (
+    <article className="tool-card vark-tool" id="vark-tool">
+      <div className="tool-heading">
+        <div>
+          <p className="eyebrow">VARK Questionnaire</p>
+          <h2>Learning style score</h2>
+        </div>
+        <button className="text-action" type="button" onClick={() => setAnswers({})}>
+          Clear
+        </button>
+      </div>
+      <p className="tool-copy">
+        Tick the answer letters you chose in the questionnaire. More than one answer per question is allowed.
+      </p>
+      <div className="vark-grid" aria-label="VARK answer scoring grid">
+        {Array.from({ length: 16 }, (_, index) => index + 1).map((question) => (
+          <div className="vark-row" key={question}>
+            <span>Q{question}</span>
+            {(["a", "b", "c", "d"] as const).map((choice) => (
+              <label key={choice}>
+                <input
+                  type="checkbox"
+                  checked={(answers[Number(question)] ?? []).includes(choice)}
+                  onChange={() => toggle(Number(question), choice)}
+                />
+                <b>{choice}</b>
+                <small>{varkScoring[Number(question)][choice]}</small>
+              </label>
+            ))}
+          </div>
+        ))}
+      </div>
+      <div className="tool-results four">
+        {(Object.keys(scores) as VarkMode[]).map((mode) => (
+          <span className={preferred.includes(mode) ? "top-score" : undefined} key={mode}>
+            <b>{mode}</b>
+            <strong>{scores[mode]}</strong>
+            <small>{varkLabels[mode]}</small>
+          </span>
+        ))}
+      </div>
+    </article>
+  );
+}
+
+function SpiTool() {
+  const [points, setPoints] = useState<Record<SpiSection, Record<SpiLetter, number>>>(() =>
+    spiSections.reduce((sectionMap, section) => {
+      sectionMap[section] = spiLetters.reduce((letterMap, letter) => {
+        letterMap[letter] = 0;
+        return letterMap;
+      }, {} as Record<SpiLetter, number>);
+      return sectionMap;
+    }, {} as Record<SpiSection, Record<SpiLetter, number>>),
+  );
+  const rowTotals = useMemo(
+    () =>
+      spiSections.reduce((totals, section) => {
+        totals[section] = spiLetters.reduce((sum, letter) => sum + points[section][letter], 0);
+        return totals;
+      }, {} as Record<SpiSection, number>),
+    [points],
+  );
+  const roleTotals = useMemo(
+    () =>
+      spiRoles.reduce((totals, role) => {
+        totals[role] = spiSections.reduce(
+          (sum, section) => sum + points[section][spiAnalysisChart[section][role]],
+          0,
+        );
+        return totals;
+      }, {} as Record<SpiRole, number>),
+    [points],
+  );
+  const highest = Math.max(...Object.values(roleTotals));
+  const leadingRoles = spiRoles.filter((role) => highest > 0 && roleTotals[role] === highest);
+
+  function setPoint(section: SpiSection, letter: SpiLetter, value: string) {
+    const numeric = Math.max(0, Math.min(10, Number(value) || 0));
+    setPoints((current) => ({
+      ...current,
+      [section]: {
+        ...current[section],
+        [letter]: numeric,
+      },
+    }));
+  }
+
+  function clear() {
+    setPoints(
+      spiSections.reduce((sectionMap, section) => {
+        sectionMap[section] = spiLetters.reduce((letterMap, letter) => {
+          letterMap[letter] = 0;
+          return letterMap;
+        }, {} as Record<SpiLetter, number>);
+        return sectionMap;
+      }, {} as Record<SpiSection, Record<SpiLetter, number>>),
+    );
+  }
+
+  return (
+    <article className="tool-card spi-tool" id="spi-tool">
+      <div className="tool-heading">
+        <div>
+          <p className="eyebrow">Self-Perception Inventory</p>
+          <h2>SPI analysis chart</h2>
+        </div>
+        <button className="text-action" type="button" onClick={clear}>
+          Clear
+        </button>
+      </div>
+      <p className="tool-copy">
+        For each SPI section, distribute 10 points across letters a-i. The role totals are calculated from the analysis chart.
+      </p>
+      <div className="spi-entry-grid" aria-label="SPI point entry grid">
+        <div className="spi-entry-head">
+          <span>Section</span>
+          {spiLetters.map((letter) => (
+            <span key={letter}>{letter}</span>
+          ))}
+          <span>Total</span>
+        </div>
+        {spiSections.map((section) => (
+          <div className={`spi-entry-row ${rowTotals[section] === 10 ? "complete" : ""}`} key={section}>
+            <span>{section}</span>
+            {spiLetters.map((letter) => (
+              <input
+                aria-label={`SPI section ${section} letter ${letter}`}
+                key={letter}
+                min="0"
+                max="10"
+                type="number"
+                value={points[section][letter]}
+                onChange={(event) => setPoint(section, letter, event.target.value)}
+              />
+            ))}
+            <strong>{rowTotals[section]}</strong>
+          </div>
+        ))}
+      </div>
+      <div className="spi-analysis-table" aria-label="SPI role totals">
+        {spiRoles.map((role) => (
+          <div className={leadingRoles.includes(role) ? "top-score" : undefined} key={role}>
+            <span>{role}</span>
+            <strong>{roleTotals[role]}</strong>
+            <small>{spiRoleNames[role]}</small>
+          </div>
+        ))}
+      </div>
+    </article>
   );
 }
 
