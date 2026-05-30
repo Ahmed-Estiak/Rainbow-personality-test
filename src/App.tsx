@@ -931,6 +931,8 @@ function SpiTool() {
       return sectionMap;
     }, {} as Record<SpiSection, Record<SpiLetter, number>>),
   );
+  const [showSpiResult, setShowSpiResult] = useState(false);
+  const [attemptedSpiResult, setAttemptedSpiResult] = useState(false);
   const rowTotals = useMemo(
     () =>
       spiSections.reduce((totals, section) => {
@@ -939,8 +941,9 @@ function SpiTool() {
       }, {} as Record<SpiSection, number>),
     [points],
   );
-  const invalidSections = spiSections.filter((section) => rowTotals[section] > 10);
+  const invalidSections = spiSections.filter((section) => rowTotals[section] !== 10);
   const hasInvalidSection = invalidSections.length > 0;
+  const startedSections = spiSections.filter((section) => rowTotals[section] > 0);
   const roleTotals = useMemo(
     () =>
       spiRoles.reduce((totals, role) => {
@@ -953,12 +956,13 @@ function SpiTool() {
     [points],
   );
   const highest = Math.max(...Object.values(roleTotals));
-  const leadingRoles = hasInvalidSection
+  const leadingRoles = !showSpiResult || hasInvalidSection
     ? []
     : spiRoles.filter((role) => highest > 0 && roleTotals[role] === highest);
 
   function setPoint(section: SpiSection, letter: SpiLetter, value: string) {
     const numeric = Math.max(0, Math.min(10, Number(value) || 0));
+    setShowSpiResult(false);
     setPoints((current) => ({
       ...current,
       [section]: {
@@ -969,6 +973,8 @@ function SpiTool() {
   }
 
   function clear() {
+    setShowSpiResult(false);
+    setAttemptedSpiResult(false);
     setPoints(
       spiSections.reduce((sectionMap, section) => {
         sectionMap[section] = spiLetters.reduce((letterMap, letter) => {
@@ -978,6 +984,11 @@ function SpiTool() {
         return sectionMap;
       }, {} as Record<SpiSection, Record<SpiLetter, number>>),
     );
+  }
+
+  function showResult() {
+    setAttemptedSpiResult(true);
+    setShowSpiResult(!hasInvalidSection);
   }
 
   return (
@@ -1022,33 +1033,39 @@ function SpiTool() {
                 </label>
               ))}
             </div>
-            {rowTotals[group.section] > 10 && (
+            {rowTotals[group.section] > 0 && rowTotals[group.section] !== 10 && (
               <p className="spi-warning" role="alert">
-                Section {group.section} is over 10 points. Reduce this section to exactly 10 before reading the result.
+                Section {group.section} must total exactly 10 points before the result can be shown.
               </p>
             )}
           </section>
         ))}
       </div>
-      {hasInvalidSection && (
+      <div className="spi-result-action">
+        <button className="primary" type="button" onClick={showResult}>
+          Show result
+        </button>
+      </div>
+      {attemptedSpiResult && hasInvalidSection && (
         <p className="spi-result-warning" role="alert">
-          SPI result unavailable: section {invalidSections.join(", ")} total must not exceed 10.
+          SPI result unavailable: every section must total exactly 10 points.
+          {startedSections.length > 0 && ` Check section ${invalidSections.join(", ")}.`}
         </p>
       )}
-      <div className="spi-analysis-table" aria-label="SPI role totals">
-        {spiRoles.map((role) => (
-          <div
-            className={`${leadingRoles.includes(role) ? "top-score" : ""} ${
-              hasInvalidSection ? "invalid-score" : ""
-            }`}
-            key={role}
-          >
-            <span>{role}</span>
-            <strong>{hasInvalidSection ? "N/A" : roleTotals[role]}</strong>
-            <small>{spiRoleNames[role]}</small>
-          </div>
-        ))}
-      </div>
+      {showSpiResult && !hasInvalidSection && (
+        <div className="spi-analysis-table" aria-label="SPI role totals">
+          {spiRoles.map((role) => (
+            <div
+              className={leadingRoles.includes(role) ? "top-score" : undefined}
+              key={role}
+            >
+              <span>{role}</span>
+              <strong>{roleTotals[role]}</strong>
+              <small>{spiRoleNames[role]}</small>
+            </div>
+          ))}
+        </div>
+      )}
     </article>
   );
 }

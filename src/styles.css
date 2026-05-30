@@ -1005,6 +1005,16 @@ p {
   margin-top: 18px;
 }
 
+.spi-result-action {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.spi-result-action .primary {
+  min-width: 180px;
+}
+
 .spi-entry-grid {
   overflow-x: auto;
   padding-bottom: 4px;
