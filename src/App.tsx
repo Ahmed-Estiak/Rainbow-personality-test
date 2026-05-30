@@ -321,7 +321,6 @@ function Header({
         <button type="button" onClick={() => onJumpTool("spi-tool")}>
           SPI
         </button>
-        <span className="header-note">Common roles in teams</span>
       </div>
     </header>
   );

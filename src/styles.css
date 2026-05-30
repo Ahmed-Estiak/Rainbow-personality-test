@@ -86,11 +86,6 @@ p {
   background: conic-gradient(var(--red), var(--yellow), var(--green), var(--blue), var(--red));
 }
 
-.header-note {
-  color: var(--ink-soft);
-  font-size: 14px;
-}
-
 .header-actions {
   display: flex;
   align-items: center;
@@ -1900,10 +1895,6 @@ p {
     min-height: 34px;
     padding: 0 11px;
     font-size: 12px;
-  }
-
-  .header-note {
-    display: none;
   }
 
   .hero h1 {
