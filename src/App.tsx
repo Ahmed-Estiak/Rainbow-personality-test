@@ -1035,7 +1035,7 @@ function SpiTool() {
             </div>
             {rowTotals[group.section] > 0 && rowTotals[group.section] !== 10 && (
               <p className="spi-warning" role="alert">
-                Section {group.section} must total exactly 10 points before the result can be shown.
+                Section {group.section} must total exactly 10 points.
               </p>
             )}
           </section>
