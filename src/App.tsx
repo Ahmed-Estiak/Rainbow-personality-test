@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import { questions, type Dimension, type Question } from "./data/questions";
@@ -135,7 +135,7 @@ function getPersonalityProfile(colour: Colour) {
   return personalityProfiles.find((profile) => profile.colour === colour)!;
 }
 
-type View = "intro" | "test" | "result";
+type View = "intro" | "test" | "result" | "vark" | "spi";
 
 function readSavedAnswers(): Answers {
   try {
@@ -247,16 +247,11 @@ function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function jumpToTool(id: "vark-tool" | "spi-tool") {
+  function openTool(tool: "vark" | "spi") {
     setPage(0);
-    setView("intro");
+    setView(tool);
     setMessage("");
-    window.requestAnimationFrame(() => {
-      document.getElementById(id)?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function showResult() {
@@ -266,7 +261,7 @@ function App() {
 
   return (
     <div className="app-shell">
-      <Header onHome={goHome} onJumpTool={jumpToTool} />
+      <Header onHome={goHome} onOpenTool={openTool} />
       {view === "intro" && (
         <Intro
           answered={answered}
@@ -295,6 +290,8 @@ function App() {
       {view === "result" && scores && (
         <Results scores={scores} onRetake={restart} />
       )}
+      {view === "vark" && <ToolPage title="VARK Questionnaire" tool={<VarkTool />} />}
+      {view === "spi" && <ToolPage title="Self-Perception Inventory" tool={<SpiTool />} />}
       <Footer />
       <ScrollToTopButton visible={showScrollTop} />
     </div>
@@ -303,10 +300,10 @@ function App() {
 
 function Header({
   onHome,
-  onJumpTool,
+  onOpenTool,
 }: {
   onHome: () => void;
-  onJumpTool: (id: "vark-tool" | "spi-tool") => void;
+  onOpenTool: (tool: "vark" | "spi") => void;
 }) {
   return (
     <header className="site-header">
@@ -315,10 +312,10 @@ function Header({
         Rainbow Test
       </button>
       <div className="header-actions" aria-label="Additional tools">
-        <button type="button" onClick={() => onJumpTool("vark-tool")}>
+        <button type="button" onClick={() => onOpenTool("vark")}>
           VARK
         </button>
-        <button type="button" onClick={() => onJumpTool("spi-tool")}>
+        <button type="button" onClick={() => onOpenTool("spi")}>
           SPI
         </button>
       </div>
@@ -533,10 +530,6 @@ function Intro({
         <InfoCard title="Four dimensions" body="Your responses produce A, B, C and D scores for team tendencies." />
         <InfoCard title="A visual result" body="Four connected colour areas reveal your dominant rainbow profile." />
       </section>
-      <section className="side-tools" aria-label="Additional questionnaire tools">
-        <VarkTool />
-        <SpiTool />
-      </section>
       <aside className="privacy-callout" aria-label="Privacy note">
         <span className="privacy-line" aria-hidden="true" />
         <div className="privacy-card">
@@ -559,6 +552,18 @@ function Intro({
         onChoose={onChoose}
         onNext={onNext}
       />
+    </main>
+  );
+}
+
+function ToolPage({ title, tool }: { title: string; tool: ReactNode }) {
+  return (
+    <main className="tool-page">
+      <div className="section-heading">
+        <p className="eyebrow">Additional questionnaire</p>
+        <h1>{title}</h1>
+      </div>
+      {tool}
     </main>
   );
 }
