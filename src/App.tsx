@@ -1,4 +1,12 @@
-import { useEffect, useMemo, useRef, useState, type PointerEvent, type ReactNode } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type PointerEvent,
+  type ReactNode,
+  type WheelEvent,
+} from "react";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import { questions, type Dimension, type Question } from "./data/questions";
@@ -984,6 +992,10 @@ function SpiTool() {
     }));
   }
 
+  function stopNumberWheel(event: WheelEvent<HTMLInputElement>) {
+    event.currentTarget.blur();
+  }
+
   function clear() {
     setShowSpiResult(false);
     setAttemptedSpiResult(false);
@@ -1040,6 +1052,7 @@ function SpiTool() {
                     max="10"
                     type="number"
                     value={points[group.section][letter]}
+                    onWheel={stopNumberWheel}
                     onChange={(event) => setPoint(group.section, letter, event.target.value)}
                   />
                 </label>
