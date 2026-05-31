@@ -22,6 +22,7 @@ import {
 const PAGE_SIZE = 5;
 const TOTAL_PAGES = questions.length / PAGE_SIZE;
 const STORAGE_KEY = "rainbow-test-answers";
+const SPI_STORAGE_KEY = "rainbow-test-spi-points";
 const ratings: { value: Rating; label: string }[] = [
   { value: 1, label: "Hardly ever / never true" },
   { value: 2, label: "Sometimes true" },
@@ -422,6 +423,7 @@ function getPersonalityProfile(colour: Colour) {
 }
 
 type View = "intro" | "test" | "result" | "vark" | "spi";
+type SpiPoints = Record<SpiSection, Record<SpiLetter, number>>;
 
 function readSavedAnswers(): Answers {
   try {
@@ -429,6 +431,40 @@ function readSavedAnswers(): Answers {
     return saved ? (JSON.parse(saved) as Answers) : {};
   } catch {
     return {};
+  }
+}
+
+function createEmptySpiPoints(): SpiPoints {
+  return spiSections.reduce((sectionMap, section) => {
+    sectionMap[section] = spiLetters.reduce((letterMap, letter) => {
+      letterMap[letter] = 0;
+      return letterMap;
+    }, {} as Record<SpiLetter, number>);
+    return sectionMap;
+  }, {} as SpiPoints);
+}
+
+function readSavedSpiPoints(): SpiPoints {
+  try {
+    const saved = localStorage.getItem(SPI_STORAGE_KEY);
+    if (!saved) {
+      return createEmptySpiPoints();
+    }
+
+    const parsed = JSON.parse(saved) as Partial<SpiPoints>;
+    const points = createEmptySpiPoints();
+    spiSections.forEach((section) => {
+      spiLetters.forEach((letter) => {
+        const value = parsed[section]?.[letter];
+        points[section][letter] =
+          typeof value === "number" && Number.isFinite(value)
+            ? Math.max(0, Math.min(10, value))
+            : 0;
+      });
+    });
+    return points;
+  } catch {
+    return createEmptySpiPoints();
   }
 }
 
@@ -930,17 +966,13 @@ function VarkTool() {
 }
 
 function SpiTool() {
-  const [points, setPoints] = useState<Record<SpiSection, Record<SpiLetter, number>>>(() =>
-    spiSections.reduce((sectionMap, section) => {
-      sectionMap[section] = spiLetters.reduce((letterMap, letter) => {
-        letterMap[letter] = 0;
-        return letterMap;
-      }, {} as Record<SpiLetter, number>);
-      return sectionMap;
-    }, {} as Record<SpiSection, Record<SpiLetter, number>>),
-  );
+  const [points, setPoints] = useState<SpiPoints>(readSavedSpiPoints);
   const [showSpiResult, setShowSpiResult] = useState(false);
   const [attemptedSpiResult, setAttemptedSpiResult] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem(SPI_STORAGE_KEY, JSON.stringify(points));
+  }, [points]);
   const rowTotals = useMemo(
     () =>
       spiSections.reduce((totals, section) => {
@@ -999,15 +1031,8 @@ function SpiTool() {
   function clear() {
     setShowSpiResult(false);
     setAttemptedSpiResult(false);
-    setPoints(
-      spiSections.reduce((sectionMap, section) => {
-        sectionMap[section] = spiLetters.reduce((letterMap, letter) => {
-          letterMap[letter] = 0;
-          return letterMap;
-        }, {} as Record<SpiLetter, number>);
-        return sectionMap;
-      }, {} as Record<SpiSection, Record<SpiLetter, number>>),
-    );
+    localStorage.removeItem(SPI_STORAGE_KEY);
+    setPoints(createEmptySpiPoints());
   }
 
   function showResult() {
