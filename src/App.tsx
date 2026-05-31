@@ -23,6 +23,7 @@ const PAGE_SIZE = 5;
 const TOTAL_PAGES = questions.length / PAGE_SIZE;
 const STORAGE_KEY = "rainbow-test-answers";
 const SPI_STORAGE_KEY = "rainbow-test-spi-points";
+const SPI_RESULT_STORAGE_KEY = "rainbow-test-spi-result-visible";
 const VARK_STORAGE_KEY = "rainbow-test-vark-answers";
 const ratings: { value: Rating; label: string }[] = [
   { value: 1, label: "Hardly ever / never true" },
@@ -468,6 +469,14 @@ function readSavedSpiPoints(): SpiPoints {
     return points;
   } catch {
     return createEmptySpiPoints();
+  }
+}
+
+function readSavedSpiResultVisible() {
+  try {
+    return localStorage.getItem(SPI_RESULT_STORAGE_KEY) === "true";
+  } catch {
+    return false;
   }
 }
 
@@ -1000,7 +1009,7 @@ function VarkTool() {
 
 function SpiTool() {
   const [points, setPoints] = useState<SpiPoints>(readSavedSpiPoints);
-  const [showSpiResult, setShowSpiResult] = useState(false);
+  const [showSpiResult, setShowSpiResult] = useState(readSavedSpiResultVisible);
   const [attemptedSpiResult, setAttemptedSpiResult] = useState(false);
 
   useEffect(() => {
@@ -1017,6 +1026,21 @@ function SpiTool() {
   const invalidSections = spiSections.filter((section) => rowTotals[section] !== 10);
   const hasInvalidSection = invalidSections.length > 0;
   const startedSections = spiSections.filter((section) => rowTotals[section] > 0);
+
+  useEffect(() => {
+    if (hasInvalidSection && showSpiResult) {
+      setShowSpiResult(false);
+      localStorage.removeItem(SPI_RESULT_STORAGE_KEY);
+    }
+  }, [hasInvalidSection, showSpiResult]);
+
+  useEffect(() => {
+    if (showSpiResult) {
+      localStorage.setItem(SPI_RESULT_STORAGE_KEY, "true");
+      return;
+    }
+    localStorage.removeItem(SPI_RESULT_STORAGE_KEY);
+  }, [showSpiResult]);
   const roleTotals = useMemo(
     () =>
       spiRoles.reduce((totals, role) => {
@@ -1048,6 +1072,7 @@ function SpiTool() {
   function setPoint(section: SpiSection, letter: SpiLetter, value: string) {
     const numeric = Math.max(0, Math.min(10, Number(value) || 0));
     setShowSpiResult(false);
+    localStorage.removeItem(SPI_RESULT_STORAGE_KEY);
     setPoints((current) => ({
       ...current,
       [section]: {
@@ -1065,6 +1090,7 @@ function SpiTool() {
     setShowSpiResult(false);
     setAttemptedSpiResult(false);
     localStorage.removeItem(SPI_STORAGE_KEY);
+    localStorage.removeItem(SPI_RESULT_STORAGE_KEY);
     setPoints(createEmptySpiPoints());
   }
 
