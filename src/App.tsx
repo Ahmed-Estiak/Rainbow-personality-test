@@ -23,6 +23,7 @@ const PAGE_SIZE = 5;
 const TOTAL_PAGES = questions.length / PAGE_SIZE;
 const STORAGE_KEY = "rainbow-test-answers";
 const SPI_STORAGE_KEY = "rainbow-test-spi-points";
+const VARK_STORAGE_KEY = "rainbow-test-vark-answers";
 const ratings: { value: Rating; label: string }[] = [
   { value: 1, label: "Hardly ever / never true" },
   { value: 2, label: "Sometimes true" },
@@ -424,6 +425,8 @@ function getPersonalityProfile(colour: Colour) {
 
 type View = "intro" | "test" | "result" | "vark" | "spi";
 type SpiPoints = Record<SpiSection, Record<SpiLetter, number>>;
+type VarkChoice = "a" | "b" | "c" | "d";
+type VarkAnswers = Record<number, VarkChoice[]>;
 
 function readSavedAnswers(): Answers {
   try {
@@ -465,6 +468,29 @@ function readSavedSpiPoints(): SpiPoints {
     return points;
   } catch {
     return createEmptySpiPoints();
+  }
+}
+
+function readSavedVarkAnswers(): VarkAnswers {
+  try {
+    const saved = localStorage.getItem(VARK_STORAGE_KEY);
+    if (!saved) {
+      return {};
+    }
+
+    const parsed = JSON.parse(saved) as Record<string, unknown>;
+    const answers: VarkAnswers = {};
+    varkQuestions.forEach((question) => {
+      const selected = parsed[String(question.id)];
+      if (Array.isArray(selected)) {
+        answers[question.id] = selected.filter((choice): choice is VarkChoice =>
+          ["a", "b", "c", "d"].includes(String(choice)),
+        );
+      }
+    });
+    return answers;
+  } catch {
+    return {};
   }
 }
 
@@ -882,7 +908,6 @@ function ToolPage({ title, tool }: { title: string; tool: ReactNode }) {
   return (
     <main className="tool-page">
       <div className="section-heading">
-        <p className="eyebrow">Additional questionnaire</p>
         <h1>{title}</h1>
       </div>
       {tool}
@@ -891,7 +916,11 @@ function ToolPage({ title, tool }: { title: string; tool: ReactNode }) {
 }
 
 function VarkTool() {
-  const [answers, setAnswers] = useState<Record<number, Array<"a" | "b" | "c" | "d">>>({});
+  const [answers, setAnswers] = useState<VarkAnswers>(readSavedVarkAnswers);
+  useEffect(() => {
+    localStorage.setItem(VARK_STORAGE_KEY, JSON.stringify(answers));
+  }, [answers]);
+
   const scores = useMemo(() => {
     const totals: Record<VarkMode, number> = { V: 0, A: 0, R: 0, K: 0 };
     Object.entries(answers).forEach(([questionId, selected]) => {
@@ -906,7 +935,7 @@ function VarkTool() {
     (mode) => highest > 0 && scores[mode] === highest,
   );
 
-  function toggle(question: number, choice: "a" | "b" | "c" | "d") {
+  function toggle(question: number, choice: VarkChoice) {
     setAnswers((current) => {
       const selected = current[question] ?? [];
       const next = selected.includes(choice)
@@ -916,6 +945,11 @@ function VarkTool() {
     });
   }
 
+  function clear() {
+    localStorage.removeItem(VARK_STORAGE_KEY);
+    setAnswers({});
+  }
+
   return (
     <article className="tool-card vark-tool" id="vark-tool">
       <div className="tool-heading">
@@ -923,7 +957,7 @@ function VarkTool() {
           <p className="eyebrow">VARK Questionnaire</p>
           <h2>Learning style score</h2>
         </div>
-        <button className="text-action" type="button" onClick={() => setAnswers({})}>
+        <button className="text-action" type="button" onClick={clear}>
           Clear
         </button>
       </div>
@@ -946,7 +980,6 @@ function VarkTool() {
                 />
                 <b>{choice}</b>
                 <span>{question.options[choice]}</span>
-                <small>{varkScoring[question.id][choice]}</small>
               </label>
             ))}
           </fieldset>

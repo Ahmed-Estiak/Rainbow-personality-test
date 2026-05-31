@@ -751,7 +751,7 @@ p {
 .vark-question label {
   position: relative;
   display: grid;
-  grid-template-columns: 24px 1fr 28px;
+  grid-template-columns: 24px 1fr;
   gap: 10px;
   align-items: start;
   min-height: 42px;
@@ -790,13 +790,6 @@ p {
 
 .vark-question label:has(input:checked) b {
   background: var(--ink);
-}
-
-.vark-question small {
-  justify-self: end;
-  color: var(--green);
-  font-size: 11px;
-  font-weight: 800;
 }
 
 .vark-grid {
@@ -2336,7 +2329,6 @@ p {
     grid-template-columns: 24px 1fr;
   }
 
-  .vark-question small,
   .spi-statement-list input {
     grid-column: 2;
     justify-self: start;
