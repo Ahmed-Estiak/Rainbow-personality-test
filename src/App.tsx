@@ -955,10 +955,22 @@ function SpiTool() {
       }, {} as Record<SpiRole, number>),
     [points],
   );
-  const highest = Math.max(...Object.values(roleTotals));
-  const leadingRoles = !showSpiResult || hasInvalidSection
-    ? []
-    : spiRoles.filter((role) => highest > 0 && roleTotals[role] === highest);
+  const rankedSpiValues = Array.from(new Set(Object.values(roleTotals))).sort((a, b) => b - a);
+  const highSpiValues = showSpiResult && !hasInvalidSection ? rankedSpiValues.slice(0, 2) : [];
+  const lowSpiValues = showSpiResult && !hasInvalidSection
+    ? [...rankedSpiValues].reverse().slice(0, 2)
+    : [];
+
+  function spiResultClass(role: SpiRole) {
+    const score = roleTotals[role];
+    if (highSpiValues.includes(score)) {
+      return "high-score";
+    }
+    if (lowSpiValues.includes(score)) {
+      return "low-score";
+    }
+    return undefined;
+  }
 
   function setPoint(section: SpiSection, letter: SpiLetter, value: string) {
     const numeric = Math.max(0, Math.min(10, Number(value) || 0));
@@ -1056,7 +1068,7 @@ function SpiTool() {
         <div className="spi-analysis-table" aria-label="SPI role totals">
           {spiRoles.map((role) => (
             <div
-              className={leadingRoles.includes(role) ? "top-score" : undefined}
+              className={spiResultClass(role)}
               key={role}
             >
               <span>{role}</span>

@@ -896,9 +896,14 @@ p {
 }
 
 .tool-results .top-score,
-.spi-analysis-table .top-score {
+.spi-analysis-table .high-score {
   border-color: rgba(35, 130, 95, 0.38);
   background: var(--green-soft);
+}
+
+.spi-analysis-table .low-score {
+  border-color: rgba(159, 45, 35, 0.24);
+  background: var(--red-soft);
 }
 
 .spi-question-group {
