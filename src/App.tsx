@@ -1686,18 +1686,39 @@ function ColourBars({
 function Footer() {
   return (
     <footer className="site-footer">
-      <h2>Disclaimer</h2>
-      <p>
-        This is an unofficial educational prototype for calculating and visualising
-        Rainbow Personality Test results. It is intended for personal reflection
-        and team-building discussion only, not as a clinical, psychological, or
-        professional assessment.
-      </p>
-      <p>
-        No login is required, and no personal data is collected or stored.
-        Original test materials belong to their respective authors or programme
-        providers.
-      </p>
+      <div className="footer-disclaimer">
+        <h2>Disclaimer</h2>
+        <p>
+          This is an unofficial educational prototype for calculating and visualising
+          Rainbow Personality Test results. It is intended for personal reflection
+          and team-building discussion only, not as a clinical, psychological, or
+          professional assessment.
+        </p>
+        <p>
+          No login is required, and no personal data is collected or stored.
+          Original test materials belong to their respective authors or programme
+          providers.
+        </p>
+      </div>
+      <div className="footer-meta">
+        <div className="developer-credit">
+          <strong>Developed by Ahmed Estiak</strong>
+          <span>MSc Data Science Student, Tampere University</span>
+        </div>
+        <details className="footer-info">
+          <summary aria-label="About this platform">
+            <span className="footer-info-icon" aria-hidden="true">i</span>
+            Info
+          </summary>
+          <p>
+            This platform was developed by Ahmed Estiak to support the completion
+            and interpretation of Rainbow Personality, VARK, and SPI assessments
+            used in educational and team-building activities. The original
+            assessment frameworks remain the property of their respective authors
+            and organizations.
+          </p>
+        </details>
+      </div>
     </footer>
   );
 }

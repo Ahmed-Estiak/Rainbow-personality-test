@@ -1945,6 +1945,11 @@ p {
   background: rgba(255, 254, 250, 0.62);
 }
 
+.footer-disclaimer {
+  max-width: 880px;
+  margin: 0 auto;
+}
+
 .site-footer h2 {
   margin-bottom: 12px;
   color: var(--ink);
@@ -1965,6 +1970,71 @@ p {
 
 .site-footer p + p {
   margin-top: 8px;
+}
+
+.footer-meta {
+  max-width: 880px;
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 25px auto 0;
+  padding-top: 20px;
+  border-top: 1px solid rgba(24, 34, 38, 0.08);
+}
+
+.developer-credit {
+  display: grid;
+  gap: 4px;
+}
+
+.developer-credit strong {
+  color: var(--ink);
+  font-size: 14px;
+}
+
+.developer-credit span {
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.footer-info {
+  max-width: 490px;
+  text-align: right;
+}
+
+.footer-info summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 0;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+}
+
+.footer-info summary::-webkit-details-marker {
+  display: none;
+}
+
+.footer-info-icon {
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(24, 34, 38, 0.2);
+  border-radius: 50%;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.footer-info p,
+.footer-info p + p {
+  margin-top: 9px;
+  text-align: right;
 }
 
 .scroll-top {
@@ -2319,6 +2389,22 @@ p {
 
   .tool-heading .text-action {
     margin-top: 8px;
+  }
+
+  .footer-meta {
+    display: grid;
+    gap: 14px;
+    text-align: center;
+  }
+
+  .footer-info {
+    max-width: none;
+    text-align: center;
+  }
+
+  .footer-info p,
+  .footer-info p + p {
+    text-align: center;
   }
 
   .vark-question {
