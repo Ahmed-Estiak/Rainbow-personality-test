@@ -1712,12 +1712,12 @@ function Footer() {
           </summary>
           <p>
             This platform was developed by Ahmed Estiak during the Let's CHAOS
-            Programme organized by Lodz University of Technology to support the
-            completion and interpretation of Rainbow Personality, VARK, and SPI
-            assessments used in educational and team-building activities. The
-            original assessment frameworks, methodologies, and related
-            intellectual property remain the property of their respective authors
-            and organizations.
+            Programme organized by Lodz University of Technology (Politechnika
+            Łódzka) to support the completion and interpretation of Rainbow
+            Personality, VARK, and SPI assessments used in educational and
+            team-building activities. The original assessment frameworks,
+            methodologies, and related intellectual property remain the property
+            of their respective authors and organizations.
           </p>
         </details>
       </div>
