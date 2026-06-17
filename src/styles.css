@@ -1980,6 +1980,7 @@ p {
   gap: 24px;
   margin: 25px auto 0;
   padding-top: 20px;
+  padding-right: 78px;
   border-top: 1px solid rgba(24, 34, 38, 0.08);
 }
 
@@ -2394,6 +2395,7 @@ p {
   .footer-meta {
     display: grid;
     gap: 14px;
+    padding-right: 0;
     text-align: center;
   }
 
